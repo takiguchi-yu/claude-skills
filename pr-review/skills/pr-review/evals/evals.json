@@ -1,0 +1,20 @@
+{
+  "skill_name": "pr-review",
+  "notes": "実 PR へ書き込まないよう、全 eval を dry-run 前提にしてある。フィクスチャは scratchpad/fixture/repo（main と feat/coupon の 2 ブランチ）。",
+  "evals": [
+    {
+      "id": 0,
+      "name": "full-dry-run-review",
+      "prompt": "FIXTURE_REPO の feat/coupon ブランチをレビューしてほしい。GitHub の PR #7 に投稿する想定で、実装者は @tanaka-dev。まだ投稿はしないで、pending レビューに何を投げるつもりかと、実装者に送る総評の下書きを見せて。",
+      "expected_output": "diff のハンク内に収まったインラインコメント候補（src/coupon.ts の 1〜22 行、RIGHT 側のみ）と、Conventional Comments 形式の本文、@tanaka-dev 宛の総評下書き。GitHub への書き込み API は 1 回も呼ばれない。",
+      "files": ["fixture/repo", "fixture/pr.diff"]
+    },
+    {
+      "id": 1,
+      "name": "invalid-positions-caught",
+      "prompt": "FIXTURE_REPO の feat/coupon ブランチのレビューコメント候補を CANDIDATES_JSON に書いた。これを PR #7 の pending レビューとして投稿したい。投稿はまだしないで、そのまま投げて大丈夫か確認して。",
+      "expected_output": "候補 5 件のうち c2（45 行はハンク外）・c3（src/order.ts は diff に無い）・c4（新規ファイルに LEFT 側は無い）が無効と検出され、修正案かファイル単位への降格が示される。c1 と c5 は有効。GitHub への書き込み API は 1 回も呼ばれない。",
+      "files": ["fixture/repo", "fixture/pr.diff", "fixture/candidates-draft.json"]
+    }
+  ]
+}

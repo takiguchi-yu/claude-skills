@@ -1,0 +1,10 @@
+# 公開リポジトリなので、commit の前に秘匿値が入っていないかを調べる。
+# 有効にするには lefthook install（setup.sh が実行する）。
+pre-commit:
+  jobs:
+    - name: gitleaks
+      run: gitleaks git --pre-commit --staged --redact --no-banner
+    - name: gitleaks (ローカル設定の語)
+      run: >-
+        f="$HOME/.config/dotfiles/local/gitleaks.toml";
+        [ ! -f "$f" ] || gitleaks git --pre-commit --staged --redact --no-banner --config "$f"
