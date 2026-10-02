@@ -18,6 +18,7 @@ GitHub はコメントを「diff のハンク内に現れる行」にしか付�
     "side":       "RIGHT",         # RIGHT=変更後 / LEFT=変更前。省略時 RIGHT
     "start_line": 40,              # 任意。複数行コメントの開始行
     "start_side": "RIGHT",         # 任意。省略時は side と同じ
+    "subject_type": "FILE",        # 任意。ファイル単位のコメント。line / side は検証しない
     "body":       "..."
   }
 
@@ -33,10 +34,14 @@ import re
 import sys
 
 HUNK = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
+GIT_HEADER = re.compile(r"^diff --git a/(.+) b/(.+)$")
 
 
 def parse_diff(text):
     """unified diff を {(path, side): set(line)} に畳む。
+
+    あわせて、`diff --git` ヘッダに現れた全パスを返す。バイナリや中身の変わらない
+    リネームはハンクを持たないので、行の集合には現れないが diff には含まれる。
 
     コメントできるのは「ハンクに現れた行」なので、追加行・削除行だけでなく
     文脈行も入れる。文脈行は変更後・変更前の両側に現れる。
@@ -48,6 +53,7 @@ def parse_diff(text):
     """
     commentable = {}
     renames = {}
+    files = set()
     old_path = new_path = None
     old_no = new_no = 0
     old_left = new_left = 0
@@ -66,6 +72,9 @@ def parse_diff(text):
         if not in_hunk:
             if raw.startswith("diff --git "):
                 old_path = new_path = None
+                m = GIT_HEADER.match(raw)
+                if m:
+                    files.update(m.groups())
                 continue
             if raw.startswith("--- "):
                 old_path = strip_prefix(raw[4:])
@@ -113,7 +122,7 @@ def parse_diff(text):
             old_left = new_left = 0
             i -= 1
 
-    return commentable, renames
+    return commentable, renames, files
 
 
 def strip_prefix(path):
@@ -128,7 +137,15 @@ def nearest(lines, target, count=3):
     return sorted(lines, key=lambda n: (abs(n - target), n))[:count]
 
 
-def check(comment, commentable):
+def not_in_diff(path, paths_in_diff):
+    hint = ""
+    tail = [p for p in paths_in_diff if p.endswith("/" + path.split("/")[-1])]
+    if tail:
+        hint = f" diff にある似たパス: {', '.join(sorted(tail)[:3])}"
+    return f"このパスは diff に含まれない。{hint}".rstrip()
+
+
+def check(comment, commentable, files):
     """1 件を検証し、無効なら理由を返す。有効なら None。"""
     path = comment.get("path")
     line = comment.get("line")
@@ -136,18 +153,22 @@ def check(comment, commentable):
 
     if not path:
         return "path が無い", []
+
+    # ファイル単位のコメントは line / side を使わないので、パスが diff にあれば足りる
+    if str(comment.get("subject_type", "")).upper() == "FILE":
+        return (None, []) if path in files else (not_in_diff(path, files), [])
+
+    paths_in_diff = {p for p, _ in commentable}
+    if path not in paths_in_diff:
+        if path in files:
+            return (f"{path} にはハンクが無い（バイナリか、中身の変わらないリネーム）。"
+                    "行ではなく subject_type: FILE で付ける"), []
+        return not_in_diff(path, paths_in_diff), []
+
     if side not in ("RIGHT", "LEFT"):
         return f"side は RIGHT か LEFT のみ（受け取った値: {side!r}）", []
     if not isinstance(line, int):
         return f"line が整数でない（受け取った値: {line!r}）", []
-
-    paths_in_diff = {p for p, _ in commentable}
-    if path not in paths_in_diff:
-        hint = ""
-        tail = [p for p in paths_in_diff if p.endswith("/" + path.split("/")[-1])]
-        if tail:
-            hint = f" diff にある似たパス: {', '.join(sorted(tail)[:3])}"
-        return f"このパスは diff に含まれない。{hint}".rstrip(), []
 
     lines = commentable.get((path, side), set())
     if not lines:
@@ -194,14 +215,14 @@ def main():
     if not isinstance(comments, list):
         sys.exit("--comments は JSON 配列でなければならない")
 
-    commentable, renames = parse_diff(diff_text)
+    commentable, renames, files_in_diff = parse_diff(diff_text)
     if not commentable:
         sys.exit("diff からコメント可能な行を 1 行も読み取れなかった。diff ファイルの中身を確認すること")
 
     valid, invalid, warnings = [], [], []
     for i, c in enumerate(comments):
         cid = c.get("id") or f"#{i}"
-        reason, near = check(c, commentable)
+        reason, near = check(c, commentable, files_in_diff)
         if reason is None:
             valid.append(c)
             if c.get("path") in renames:

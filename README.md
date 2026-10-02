@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | `complete-task/` | complete-task | ct-researcher / ct-review-accuracy / ct-review-ux / ct-review-risk / ct-verifier |
 | `pr-comments/` | pr-comments | pr-comment-verifier |
-| `pr-review/` | pr-review | — |
+| `pr-review/` | pr-review | pr-review-functionality |
 | `consistency-check/` | consistency-check | — |
 | `oo-design/` | oo-design | — |
 
