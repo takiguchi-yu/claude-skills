@@ -51,10 +51,13 @@ mutation($threadId:ID!,$body:String!){
   }}' -F threadId=THREAD_ID -F body="$(cat /path/to/reply.md)"
 ```
 
-レビュー総評への返信はスレッドが無いため、PR の会話コメントとして送り、宛先のレビュアーを冒頭で名指しする:
+スレッドへの返信を送ったら、**返信したレビュアーごとに、冒頭で `@login` とメンションした総評コメントを PR の会話コメントとして 1 件送る。** スレッドへの返信だけでは、レビュアーが返信に気づかないことがある（2026-10-02 に実際に起きた）。全件が対応不要のときも、レビュー総評の本文が空のときも送る。
+
+- スレッドごとに、結論 1 行と返信の URL を並べる
+- レビュー総評に論点があれば、その返信もここに書く（総評にはスレッドが無いため）
 
 ```bash
-gh pr comment <number> --body-file /path/to/reply.md
+gh pr comment <number> --body-file /path/to/summary.md
 ```
 
 **スレッドの resolve はレビュアーが押す。** 返信までで手を止める。
