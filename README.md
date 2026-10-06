@@ -14,6 +14,7 @@
 | `pr-review/` | pr-review | pr-review-functionality |
 | `consistency-check/` | consistency-check | — |
 | `oo-design/` | oo-design | — |
+| `spec-notation/` | spec-notation | — |
 
 ## 入れる
 
