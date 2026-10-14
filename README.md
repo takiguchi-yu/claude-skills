@@ -15,6 +15,7 @@
 | `consistency-check/` | consistency-check | — |
 | `oo-design/` | oo-design | — |
 | `spec-notation/` | spec-notation | — |
+| `diagram/` | diagram | — |
 
 ## 入れる
 
