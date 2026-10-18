@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: PR をレビューして GitHub に投稿する。/code-review で指摘を出し、まず pending レビュー（下書き）としてインラインコメントを付け、人が確認してから実装者にメンション付きで submit する。選ばれれば submit 後も返信を待ち、確かめて resolve し、approve してマージ後の後始末まで追跡する。WHEN - PR の URL や番号を渡して「レビューして」「レビューコメントを投稿して」「インラインでコメントを付けて」と言われた、下書きレビューを submit したい、submit したレビューへの返信を待って resolve・approve したい、approve した PR のマージを待って後始末したい、レビュー結果を会話に出すだけでなく PR に書き込む必要がある。レビュー依頼で PR 番号や URL が出てきたら、投稿すると明言されていなくてもこのスキルを検討する。受け取った指摘に対応する側は pr-comments を使う。
+description: PR をレビューし、指摘を pending（下書き）で GitHub に置いて、人の確認後に submit する。WHEN - PR の URL や番号とともにレビューを頼まれた（投稿すると明言されていなくても）、下書きのレビューを submit したい、submit したレビューへの返信を確かめて resolve・approve し、マージ後の後始末まで追跡したい。受けた指摘に対応する側は pr-comments を使う。
 ---
 
 # PR をレビューして pending 経由で投稿する
@@ -14,8 +14,8 @@ description: PR をレビューして GitHub に投稿する。/code-review で�
 The Standard of Code Review に沿った基準）を超える指摘だけを出す。レビュー役も採否も、毎回この同じ基準で選ぶ —
 基準が回ごとに変わると、拾う指摘も回ごとに変わり、再実行のたびに新しい指摘が出てくる。
 
-レビューの中身は、`/code-review`（Standards 軸・Spec 軸）と、同梱のエージェント `pr-review-functionality`
-（Functionality・Complexity・Tests）に任せる。このスキルの責務は、**指摘を台帳に集め、行き先を決め、
+レビューの中身は、`/code-review`（Standards 軸・Spec 軸）、`/security-review`（脆弱性）、同梱のエージェント
+`pr-review-functionality`（Functionality・Complexity・Tests）に任せる。このスキルの責務は、**指摘を台帳に集め、行き先を決め、
 diff 上の正しい位置に結びつけ、下書きとして置き、承認を得て公開すること**。手順 7 で追跡が選ばれたら、
 submit 後に返信を確かめて resolve し、approve し、マージを待って後始末するところまでを持つ（[`references/follow-up.md`](references/follow-up.md)）。
 
@@ -59,7 +59,8 @@ query($owner:String!,$repo:String!,$number:Int!){
   AskUserQuestion で「そこへ足す / 破棄して作り直す / 中止」を確認する。
   破棄は `deletePullRequestReview(input:{pullRequestReviewId:$id})`。
 - `submitted` に、`author.login` が `viewer.login` で `body` が空でないレビューがあれば**再レビュー**。
-  末尾の「再レビューのとき」も読む。スレッドへの返信だけのレビューは `body` が空なので、これで除ける。
+  手順 2 に進む前に [`references/re-review.md`](references/re-review.md) を読む（手順 2・3・4・8 に足す作業がある）。
+  スレッドへの返信だけのレビューは `body` が空なので、これで除ける。
 - `reviewThreads` と、`submitted` の `body`（過去の総評）が PR 上の既存の指摘。手順 4 で「既出」の判定に使う。
   コメントの `state` が `PENDING` のスレッドは自分の下書きなので、既出の判定には使わない。
   `pageInfo.hasNextPage` が true なら、`reviewThreads(first:100, after:<endCursor>)` でページを送って全件取る。
@@ -120,15 +121,20 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 
 ### レビュー役を立てる
 
-次の 3 体を**同じメッセージで並列に**立てる。**`cd "$WT"` してから Skill ツールで `code-review` を起動し**、
+次の 4 体を**同じメッセージで並列に**立てる。Skill ツールで `code-review` を起動し、
 `/code-review` の Process 4（Spawn both sub-agents in parallel）で Standards・Spec のサブエージェントを
-立てるとき、同じメッセージで機能面のレビュー役も立てる。
-報告がすべて揃ったら元のディレクトリへ戻る。
+立てるとき、同じメッセージで機能面とセキュリティのレビュー役も立てる。
+
+**メインセッションの cwd はメインの作業ツリーに置いたまま立てる**（立てる前に `pwd` で確かめる）。
+レビュー役には `$WT` を絶対パスで渡すので、`$WT` へ `cd` する必要は無い。`/security-review` は起動時に
+メインセッションの cwd が git リポジトリかを確かめて、違えば中止する。scratchpad の `$WT` へ `cd` すると cwd が
+セッション開始時のディレクトリに戻されることがあり、戻った先がリポジトリの外だと中止になった。
 
 | レビュー役 | 立て方 | 見るもの |
 | --- | --- | --- |
 | Standards・Spec（2 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 規約違反と smell／仕様との差分 |
 | 機能面（1 体） | Agent ツールで `subagent_type: pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
+| セキュリティ（1 体） | Agent ツールで `subagent_type: general-purpose`・`model: opus`。中で `/security-review` を起動する | この PR で入った、悪用経路のある脆弱性 |
 
 **機能面のレビュー役の prompt には入力だけを書く** — `$WT`、固定点 `origin/<baseRefName>`、
 `$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`。見方・基準・出力形式はエージェント定義が
@@ -143,8 +149,7 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 
 - 最初に ~/.claude/skills/pr-review/references/review-standard.md を読む。
 - 返すのは ~/.claude/skills/pr-review/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
-  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」（Nit、既存と同型、PR の前からある問題、
-  作者が判断済みのもの）は返さない。smell は B に当たるものだけ返す。
+  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。smell は B に当たるものだけ返す。
 - 出力形式は ~/.claude/agents/pr-review-functionality.md の「出力形式」節に従う。
   ID の接頭辞は Standards なら std、Spec なら spec。コードは貼らずに path:line で指す。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
@@ -154,6 +159,26 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 `~/.claude/skills/writing-for-agents/SKILL.md` を足す。** エージェントが読む文書とは、`SKILL.md`・`CLAUDE.md`・`AGENTS.md`、
 スキル・エージェント・ルールの定義とその参照先（`.claude/` や `skills/` `agents/` 配下の `.md` など）。
 リポジトリに書き方の規約が無くても、重複・禁止形・古びる値の写しといった書き方の基準が当たるため。
+
+**セキュリティのレビュー役の prompt は、次の文面のまま書く**（`<WT>` `<PRDIR>` は展開した絶対パス）。
+`/security-review` は組み込みのスキルなので、中身はこのスキルに写さずに起動して使う。ただし、組み込みの指示に埋め込まれる
+`git diff origin/HEAD...` などは、サブエージェントの `cd` 先ではなく**メインセッションの cwd で**実行される
+（Claude Code 2.1.302 で、サブエージェントから起動して確かめた）。差分の基点も `origin/HEAD` で、PR のベースと限らない。
+そこで差分は `$PRDIR` のファイルに差し替える。
+
+```markdown
+Skill ツールで `security-review` を起動し、その指示どおりにセキュリティレビューをする。ただし次を優先する。
+
+- 指示に埋め込まれた GIT STATUS・FILES MODIFIED・COMMITS・DIFF CONTENT は別の作業ツリーの内容なので使わない。
+  レビューする差分は <PRDIR>/pr.diff、変更ファイルの一覧は <PRDIR>/files.txt、コミットの一覧は <PRDIR>/commits.txt。
+- コードは <WT> 配下の絶対パスで読み、git は `git -C <WT>` で実行する。
+- 立てるサブタスクの prompt にも、埋め込みの 4 節の代わりに上の 3 ファイルと <WT> のパスを書く。
+- 最終の返答は、脆弱性を探すサブタスクと、誤検知を除くサブタスクの結果がすべて返ってから書く。
+- 最終の返答は /security-review の報告（markdown）だけにする。`security-review` を起動できなかったら、エラー文だけを返す。
+```
+
+`files.txt` が `.md` だけなら、セキュリティのレビュー役は立てない（`/security-review` は文書への指摘を除外する）。
+手順 9 で「セキュリティは文書だけの PR のため未実施」と報告する。エラー文だけが返ったときも未実施として、エラー文を理由に控える。
 
 Standards・Spec のサブエージェントは `model: opus` で立てる（`pr-review-functionality` は定義で opus に固定してある）。
 手順 4・5 でコードを読み直すときも `$WT` 配下のパスを読む。
@@ -165,7 +190,7 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
 `/code-review` が spec の場所を尋ねる場面でも、`intent.md` を spec として渡して進める。
 
 **完了条件**: HEAD が `headRefOid` と一致し、`$PRDIR` に `pr.diff` `files.txt` `commits.txt` `intent.md`
-があり、3 体の報告が手元にある（Spec 軸は未実施でもよい。その場合は理由が控えてある）。
+があり、4 体の報告が手元にある（Spec 軸とセキュリティは未実施でもよい。その場合は理由が控えてある）。
 機能面の報告の「網羅」に `files.txt` の全ファイルが載っている。欠けたファイルがあれば、機能面のレビュー役を
 入力の「対象ファイル」に欠けた一覧を渡して 1 回だけ立て直す（それでも欠けたら、手順 9 で欠けたファイルを報告する）。
 
@@ -182,13 +207,14 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
 | fn-2 = spec-3 | 機能面, Spec | app.py:40 | 空配列で先頭要素を参照して panic する | A | 呼び出し元 api.py:22 は空を渡しうる。len を検査 | | |
 ```
 
-- ID は報告の ID（`std-` `spec-` `fn-`）をそのまま使う。立て直したレビュー役は番号を 1 から振ってくるので、
-  台帳に足すときに接頭辞ごとの続き番号へ振り直す。区分は review-standard.md の A〜C（`/code-review` の報告に
-  区分が無ければ、ここで当てる。A〜C のどれにも当たらない行は「—」）。
+- ID は報告の ID（`std-` `spec-` `fn-`）をそのまま使う。`/security-review` の `Vuln <N>` は `sec-<N>` にする。
+  立て直したレビュー役は番号を 1 から振ってくるので、台帳に足すときに接頭辞ごとの続き番号へ振り直す。
+  区分は review-standard.md の A〜C（`/code-review` の報告に区分が無ければ、ここで当てる。`sec-` は A。
+  A〜C のどれにも当たらない行は「—」）。
 - 報告の指摘は全部載せる。行き先と理由の列は手順 4 で埋める。
 - 同じ場所・同じ論点が複数の報告から出たら 1 行にまとめ、ID の列に全部の ID を `=` でつないで書く。
 
-**完了条件**: 3 体の報告に出た指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
+**完了条件**: 4 体の報告に出た指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
 
 ## 手順 4 — 行き先を決めてインラインコメントに変換する
 
@@ -216,7 +242,7 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
 
 ### インラインコメントに変換する
 
-`/code-review` と機能面のレビュー役が返すのは散文の報告なので、行き先がインラインの行を
+レビュー役が返すのは散文の報告なので、行き先がインラインの行を
 **1 指摘 = 1 スレッド**にばらし、diff 上の位置を決める。
 
 投稿候補を JSON 配列で `.scratch/pr-<number>/candidates.json` に書く。
@@ -391,7 +417,7 @@ mutation($reviewId:ID!,$body:String!){
 - 投稿したインラインコメントの件数（ラベル別）と、レビューの URL
 - 総評に回した指摘と、その理由
 - 不採用の件数（理由別）
-- Spec 軸を実施しなかったなら、その理由
+- Spec 軸・セキュリティを実施しなかったなら、その理由
 - 台帳のパス（`.scratch/pr-<number>/ledger.md`）
 
 `.scratch/pr-<number>/` に台帳・候補・検証結果・総評が残っているので、次に開く人が辿れる（@ISSUE.md）。
@@ -400,27 +426,6 @@ mutation($reviewId:ID!,$body:String!){
 
 submit 済みのレビューへの返信の追跡、または中断した追跡の再開を頼まれたら、手順 1 で PR の情報を取ったあと、
 手順 2〜8 と再レビューの判定を飛ばして [`references/follow-up.md`](references/follow-up.md) の「入口」に従う。
-
-## 再レビューのとき
-
-手順 1 で、自分の submitted レビュー（`body` が空でないもの）が既にあると分かったとき。
-レビュー役は初回と同じ 3 体を、初回と同じ固定点 `origin/<baseRefName>` で立てて PR 全体を見る。
-そのうえで、前回のあとに積まれた修正コミットを機能面のレビュー役に重点として渡す。
-
-1. **修正コミットを切り出す。** 手順 2 で `commits.txt` を書いた直後、レビュー役を立てる前に行う。
-   前回レビューした head は、上の条件に当たる自分のレビューのうち最新のものの `commit.oid`。
-   `git -C "$WT" merge-base --is-ancestor <commit.oid> HEAD` が通れば、
-   `git -C "$WT" diff <commit.oid>..HEAD -- $(cat "$PRDIR/files.txt") > "$PRDIR/fix.diff"` として、
-   機能面のレビュー役の入力に足す。PR のファイルに絞るのは、base を取り込むマージ（Update branch）の変更を除くため。
-   通らなければ（rebase で履歴が書き換わった）、`fix.diff` は作らずに進める。
-2. **由来を付ける。** `fix.diff` があるときは、台帳に「由来」の列を足し、指摘ごとに
-   **修正コミット由来**（`fix.diff` に現れる行）か**前回の見落とし**（前回の head に既にあった行）かを書く。
-   前回の見落としも、ほかの指摘と同じ基準で行き先を決める。`fix.diff` が無いときは由来を付けない。
-3. **前回の判断をそろえる。** 手順 2 で退避した直近の `prev-*/ledger.md` を読む。前回不採用にした行と同じ論点は、
-   根拠にした `path:line` が `fix.diff` に現れなければ、前回と同じ理由で不採用にする。現れていれば、コードが
-   変わっているので改めて判定する。前回インラインや総評に出した論点は、手順 4 の「既出」に当たる。
-
-総評には、由来ごとの件数の行を足す（書式は comment-format.md の「submit の総評」）。
 
 ## dry-run で止めたいとき
 
@@ -438,5 +443,6 @@ submit 済みのレビューへの返信の追跡、または中断した追跡�
 | `scripts/wait_for_replies.py` | submit 後の反応（自分のスレッドへの返信・会話コメント・再依頼・他人の resolve・`--head` からの push・クローズ／マージ）が届くまで待ち、JSON に書き出す。判定はしない |
 | `references/follow-up.md` | submit 後の追跡。返信を確かめて resolve か追い返信をし、approve し、マージを待って後始末するまでの手順と歯止め |
 | `references/comment-format.md` | Conventional Comments に沿った本文の書式と、submit の総評・追い返信・approve の本文の型 |
+| `references/re-review.md` | 再レビューのときに手順 2・3・4・8 に足す作業（修正コミットの切り出し、由来、前回の判断との整合） |
 | `references/review-standard.md` | 指摘を出す基準（Google Engineering Practices に沿う）。レビュー役と手順 4 が読む |
 | `pr-review-functionality`（リポジトリの `pr-review/agents/`） | 機能面のレビュー役。手順 2 で立てる |
