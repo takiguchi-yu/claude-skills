@@ -64,12 +64,15 @@ python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
 ```bash
 python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
   --repo <owner>/<repo> --number <number> --since <follow.md の since> \
-  --out <PRDIR>/events.json
+  --head <follow.md の確かめた head> --out <PRDIR>/events.json
 ```
+
+`--head` を付けるのは、返信せずに push だけで直す作者がいるため。付けないと、push は反応として拾われず、
+返信を待ったまま時間切れを繰り返す。
 
 | 終了コード | 意味 | 次の一手 |
 | --- | --- | --- |
-| 0（`reason: events`） | 反応が届いた | F3 へ |
+| 0（`reason: events`） | 反応が届いた（`head_changed: true` なら、返信が無くても push があった） | F3 へ。push だけのときは、指摘ごとに今の head のコードで直ったかを確かめる |
 | 0（`reason: closed`） | approve の前に PR がクローズ・マージされた | F7 へ |
 | 3 | 約 2 時間、何も届かなかった | 同じ `--since` で起動し直す |
 | 1 | GitHub への問い合わせが 5 回続けて失敗した | 1 回だけ起動し直す。また 1 なら、台帳の状態を「停止（待機の失敗）」にし、stderr を添えて F7 へ |
@@ -141,6 +144,8 @@ mutation($id:ID!,$body:String!){
 gh pr comment <number> --body-file <PRDIR>/reply-<ID>.md
 ```
 
+総評の行への返信はメンションで宛先を示すので、投稿の前に SKILL.md 手順 8 の `check_mention.py` で照合する。
+
 投稿したら、台帳の追い返信の数を 1 増やし、状態を `待ち` に戻す。**投稿の前に数を見る** — 既に 2 なら投稿せず、
 冒頭の歯止めのとおり AskUserQuestion で聞く。
 
@@ -173,7 +178,8 @@ rebase で `レビュー時の head` が今の履歴から消えていれば（`
 
 **approve の直前に head を取り直す。** 見直した head と違えば、新しいコミットが積まれている。F3 からやり直す。
 
-本文は [`comment-format.md`](comment-format.md) の「approve の本文」に沿って `<PRDIR>/approve.md` に書く。
+本文は [`comment-format.md`](comment-format.md) の「approve の本文」に沿って `<PRDIR>/approve.md` に書き、
+SKILL.md 手順 8 の `check_mention.py` で照合してから approve する（F6 で出し直すときも同じ）。
 
 ```bash
 gh api graphql -f query='
@@ -186,7 +192,7 @@ mutation($prId:ID!,$oid:GitObjectID!,$body:String!){
 返る `state` が `APPROVED` で、`commit.oid` が見直した head なら成功。台帳の状態を「approve 済み（マージ待ち）」にし、
 確かめた head を更新する。
 
-**完了条件**: `state` が `APPROVED` になり、レビューの URL が返っている。F6 へ。
+**完了条件**: `check_mention.py` が終了コード 0 で通った本文で approve し、`state` が `APPROVED` になり、レビューの URL が返っている。F6 へ。
 
 ## 手順 F6 — マージを待つ
 
@@ -215,19 +221,22 @@ worktree を今の head に合わせ、確かめた head から今の head ま�
 （rebase されていれば `range-diff` から）。見るのは A（壊れる）だけ。
 
 - A がある → F5 と同じく指摘を返し、台帳の状態を「追跡中」に戻して F2 へ
-- A が無い → 自分の approve がまだ有効かを確かめる。ブランチ保護で「push で approve を取り消す」設定なら、`DISMISSED` になっている
+- A が無い → 自分の approve がまだマージに効いているかを確かめる。効かなくなる設定は 2 通りあり、見え方が違う
+  - 「push で approve を取り消す」設定（`dismiss_stale_reviews_on_push`）— 自分のレビューが `DISMISSED` になる
+  - 「最後の push の後の承認を求める」設定（ルールセットの `require_last_push_approval`）— 自分のレビューは `APPROVED`
+    のまま見えるが、`reviewDecision` が `REVIEW_REQUIRED` になり、マージは止まる
 
 ```bash
 gh api graphql -f query='
 query($owner:String!,$repo:String!,$number:Int!){ viewer{ login }
-  repository(owner:$owner,name:$repo){ pullRequest(number:$number){
+  repository(owner:$owner,name:$repo){ pullRequest(number:$number){ reviewDecision mergeStateStatus
     latestOpinionatedReviews(first:20){ nodes{ author{ login } state commit{ oid } } } } } }' \
   -F owner=<owner> -F repo=<repo> -F number=<number>
 ```
 
-自分（`viewer.login`）のレビューが `APPROVED` ならそのままでよい。`DISMISSED` なら、F5 の approve を今の head で出し直す
-（本文は comment-format.md の「approve の本文」の、出し直しの形）。どちらでも、台帳の確かめた head を今の head に更新し、
-F6 を起動し直す。
+自分（`viewer.login`）のレビューが `DISMISSED`、または `reviewDecision` が `REVIEW_REQUIRED` なら、F5 の approve を今の head で出し直す
+（本文は comment-format.md の「approve の本文」の、出し直しの形）。それ以外はそのままでよい。どちらでも、台帳の確かめた head を
+今の head に更新し、F6 を起動し直す。
 
 **完了条件**: スクリプトが `reason: closed` で終わった。
 

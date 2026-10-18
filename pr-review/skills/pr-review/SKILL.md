@@ -150,6 +150,11 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
 ```
 
+**`files.txt` にエージェントが読む文書があれば、`/code-review` の Process 3 で集める標準の出典に
+`~/.claude/skills/writing-for-agents/SKILL.md` を足す。** エージェントが読む文書とは、`SKILL.md`・`CLAUDE.md`・`AGENTS.md`、
+スキル・エージェント・ルールの定義とその参照先（`.claude/` や `skills/` `agents/` 配下の `.md` など）。
+リポジトリに書き方の規約が無くても、重複・禁止形・古びる値の写しといった書き方の基準が当たるため。
+
 Standards・Spec のサブエージェントは `model: opus` で立てる（`pr-review-functionality` は定義で opus に固定してある）。
 手順 4・5 でコードを読み直すときも `$WT` 配下のパスを読む。
 
@@ -344,6 +349,22 @@ submit の `body` がそのままメンション付きコメントになり、**
 **本文はファイルに書き、`-F body=@<path>` でファイルから読ませる。** `$(cat ...)` で渡すと、
 本文に含まれるバッククォートをシェルがコマンド置換として実行してしまう。
 
+**メンション先は、本文を書く直前に、その PR の `author.login` から取る。** 前の PR の作者や記憶から写さない —
+同じ作者の PR が続いたあとに別の作者の PR が来ると、前の人に通知が飛ぶ（自動レビューで実際に起きた）。
+書いたら、submit の前に照合する。この照合は、本文の最初のメンションを実装者に届ける投稿すべてに掛ける
+（submit の総評、追跡の approve と総評への返信）。
+
+```bash
+python3 ~/.claude/skills/pr-review/scripts/check_mention.py \
+  --repo <owner>/<repo> --number <number> --body .scratch/pr-<number>/summary.md
+```
+
+終了コード 0 が通過の合図。1 なら出力が示す login に直して照合し直す。2（作者を取得できない）なら投稿しない。
+
+同じ照合は、PreToolUse フック `scripts/pretool_check_mention.py` が投稿コマンドの実行前にも掛ける（ユーザー設定に登録している場合）。
+フックに止められたら、理由に示された宛先・渡し方に直して投稿し直す。本文は `-F body=@<file>` / `--body-file <file>` で、
+PR は node ID（`PR_…` / `PRR_…`）か番号をリテラルで渡す — 変数で渡すとフックが特定できずに止める。
+
 ```bash
 gh api graphql -f query='
 mutation($reviewId:ID!,$body:String!){
@@ -359,7 +380,7 @@ mutation($reviewId:ID!,$body:String!){
 返る `state` が `COMMENTED` なら成功。`PENDING` のままなら submit が効いていない。
 `submittedAt` と `commit.oid` は追跡の F1 で使うので控える。
 
-**完了条件**: `state` が `COMMENTED` になり、レビューの URL が返っている。追跡が選ばれていれば、手順 9 の報告の後に
+**完了条件**: `check_mention.py` が終了コード 0 で通った本文で submit し、`state` が `COMMENTED` になり、レビューの URL が返っている。追跡が選ばれていれば、手順 9 の報告の後に
 [`references/follow-up.md`](references/follow-up.md) の F1 へ進む。
 
 ## 手順 9 — 報告する
@@ -411,6 +432,8 @@ submit 済みのレビューへの返信の追跡、または中断した追跡�
 | ファイル | 役割 |
 | --- | --- |
 | `scripts/validate_positions.py` | diff と投稿候補を突き合わせ、位置の妥当性を判定する。`gh` も GitHub も知らないので単体で試せる |
+| `scripts/check_mention.py` | 本文の最初のメンションが PR の作者と一致するかを判定する。作者は自分で `gh` から取る |
+| `scripts/pretool_check_mention.py` | PreToolUse フック（matcher `Bash`）。submit・approve・`gh pr comment` の本文を `check_mention.py` で照合し、不一致なら実行させない。作者が自分の PR は対象外 |
 | `scripts/post_pending_review.py` | pending レビューを作り、スレッドを 1 件ずつ足す。`--dry-run` あり |
 | `scripts/wait_for_replies.py` | submit 後の反応（自分のスレッドへの返信・会話コメント・再依頼・他人の resolve・`--head` からの push・クローズ／マージ）が届くまで待ち、JSON に書き出す。判定はしない |
 | `references/follow-up.md` | submit 後の追跡。返信を確かめて resolve か追い返信をし、approve し、マージを待って後始末するまでの手順と歯止め |
