@@ -11,8 +11,7 @@ description: PR をレビューし、指摘を pending（下書き）で GitHub 
 
 **指摘は基準で選ぶ。** 改善の余地は探せばキリがなく、レビューに使う時間とトークンは実装に回すほうが価値が高い。
 そこで [`references/review-standard.md`](references/review-standard.md)（Google Engineering Practices の
-The Standard of Code Review に沿った基準）を超える指摘だけを出す。レビュー役も採否も、毎回この同じ基準で選ぶ —
-基準が回ごとに変わると、拾う指摘も回ごとに変わり、再実行のたびに新しい指摘が出てくる。
+The Standard of Code Review に沿った基準）を超える指摘だけを出す。レビュー役も採否も、毎回この同じ基準で選ぶ。
 
 レビューの中身は、`/code-review`（Standards 軸・Spec 軸）、`/security-review`（脆弱性）、同梱のエージェント
 `pr-review-functionality`（Functionality・Complexity・Tests）に任せる。このスキルの責務は、**指摘を台帳に集め、行き先を決め、
@@ -115,7 +114,7 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 手順 1 で取った PR 本文と連結 issue を `$PRDIR/intent.md` に書く。本文が Jira などのチケットを
 指していれば、その本文も読んで足す。
 
-`.scratch/pr-<番号>/` を作業場所にする。`.gitignore` に載っていなければコミットに巻き込まないよう注意する。
+`.scratch/pr-<番号>/` を作業場所にする。`.gitignore` に載っていなければ、`.git/info/exclude` に `.scratch/` を足す。
 前回の実行のファイルを `prev-<日時>/` へ移すのは、上書きや追記で前回の台帳が崩れるのを防ぐため。
 レビュー役は `$WT` で動くので、`$PRDIR` 配下のファイルは**展開済みの絶対パス**で渡す。
 
@@ -155,10 +154,16 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
 ```
 
-**`files.txt` にエージェントが読む文書があれば、`/code-review` の Process 3 で集める標準の出典に
-`~/.claude/skills/writing-for-agents/SKILL.md` を足す。** エージェントが読む文書とは、`SKILL.md`・`CLAUDE.md`・`AGENTS.md`、
-スキル・エージェント・ルールの定義とその参照先（`.claude/` や `skills/` `agents/` 配下の `.md` など）。
-リポジトリに書き方の規約が無くても、重複・禁止形・古びる値の写しといった書き方の基準が当たるため。
+**PR が下の表（条件付きの標準の出典）の条件に当たれば、`/code-review` の Process 3 で集める標準の出典に、その行の出典を足す。**
+当たった行があれば [`references/conditional-sources.md`](references/conditional-sources.md) を読み、その行の節に従って
+出典を落とし、添え書きを Standards のサブエージェントの prompt に書く。
+
+| 条件 | conditional-sources.md の節 |
+| --- | --- |
+| `files.txt` にエージェントが読む文書がある — `SKILL.md`・`CLAUDE.md`・`AGENTS.md`、スキル・エージェント・ルールの定義とその参照先（`.claude/` や `skills/` `agents/` 配下の `.md` など） | writing-for-agents |
+| `pr.diff` が設計に手を入れている — 新しいコードのファイル・モジュール・クラスの追加か、公開インターフェース（外から呼ばれる関数のシグネチャ・型・API・設定キー）の変更。`oo-design` 自身の発動条件に揃えてある | oo-design |
+| `files.txt` に画面のファイルがある — 利用者が見る見た目・文言・操作を変えるもの（`.tsx` `.jsx` `.vue` `.svelte` `.css` `.scss` `.html`、サーバ側のテンプレートなど）。差分がフック・API 呼び出し・型定義だけなら当たらない | Web Interface Guidelines |
+| 変更したファイルが属する `package.json` の依存に `react` か `next` があり、`pr.diff` がコンポーネント・ページ・データ取得・Server Action を変えている | React Best Practices |
 
 **セキュリティのレビュー役の prompt は、次の文面のまま書く**（`<WT>` `<PRDIR>` は展開した絶対パス）。
 `/security-review` は組み込みのスキルなので、中身はこのスキルに写さずに起動して使う。ただし、組み込みの指示に埋め込まれる
@@ -185,12 +190,12 @@ Standards・Spec のサブエージェントは `model: opus` で立てる（`pr
 
 `/code-review` は Spec 軸のために `docs/agents/issue-tracker.md` を要求する。無いリポジトリでも、
 PR 本文や連結 issue に完了条件が書いてあれば、それを spec として渡す。spec が何も無ければ
-**Standards 軸だけで進め、手順 9 で「Spec 軸は spec が見つからず未実施」と報告する**。
-ここでユーザーに `/setup-matt-pocock-skills` を促して止まらない — レビューは Spec 軸が無くても成立する。
+**Standards 軸だけで進め、手順 9 で「Spec 軸は spec が見つからず未実施」と報告する** — レビューは Spec 軸が無くても成立する。
 `/code-review` が spec の場所を尋ねる場面でも、`intent.md` を spec として渡して進める。
 
 **完了条件**: HEAD が `headRefOid` と一致し、`$PRDIR` に `pr.diff` `files.txt` `commits.txt` `intent.md`
 があり、4 体の報告が手元にある（Spec 軸とセキュリティは未実施でもよい。その場合は理由が控えてある）。
+条件付きの標準の出典の表の全行について、当たったかと、当たった行の出典と添え書きを Standards に渡したか（渡せなかったなら理由）が控えてある。
 機能面の報告の「網羅」に `files.txt` の全ファイルが載っている。欠けたファイルがあれば、機能面のレビュー役を
 入力の「対象ファイル」に欠けた一覧を渡して 1 回だけ立て直す（それでも欠けたら、手順 9 で欠けたファイルを報告する）。
 
@@ -236,8 +241,8 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
   resolved 済みのスレッドなら、理由の列にそう書く — 直っていないのに resolve された可能性を、手順 7 で人が見られるように
 - **却下** — 手順 7 で人が下書きから外した（外した日と、人が述べた理由）
 
-ラベルは区分から決める — A は `issue (blocking)`、B は誤りなら `issue (non-blocking)`・よりよい形の提案なら
-`suggestion (non-blocking)`、C は `question`（書式は [`references/comment-format.md`](references/comment-format.md)）。`nitpick` は出さない。
+ラベルは区分から決める。対応は review-standard.md の「出すもの」表のラベル列、書式は
+[`references/comment-format.md`](references/comment-format.md) に従う。
 レビュイーに出すかどうかの最終判断は、手順 7 で人がする。
 
 ### インラインコメントに変換する
@@ -418,6 +423,7 @@ mutation($reviewId:ID!,$body:String!){
 - 総評に回した指摘と、その理由
 - 不採用の件数（理由別）
 - Spec 軸・セキュリティを実施しなかったなら、その理由
+- 条件付きで足した標準の出典（当たった行が無ければ「なし」、落とせなかった行は理由）
 - 台帳のパス（`.scratch/pr-<number>/ledger.md`）
 
 `.scratch/pr-<number>/` に台帳・候補・検証結果・総評が残っているので、次に開く人が辿れる（@ISSUE.md）。
@@ -425,7 +431,7 @@ mutation($reviewId:ID!,$body:String!){
 ## 追跡だけを頼まれたとき
 
 submit 済みのレビューへの返信の追跡、または中断した追跡の再開を頼まれたら、手順 1 で PR の情報を取ったあと、
-手順 2〜8 と再レビューの判定を飛ばして [`references/follow-up.md`](references/follow-up.md) の「入口」に従う。
+手順 2 は worktree の作成だけを行い、手順 3〜8 と再レビューの判定を飛ばして [`references/follow-up.md`](references/follow-up.md) の「入口」に従う。
 
 ## dry-run で止めたいとき
 
@@ -445,4 +451,5 @@ submit 済みのレビューへの返信の追跡、または中断した追跡�
 | `references/comment-format.md` | Conventional Comments に沿った本文の書式と、submit の総評・追い返信・approve の本文の型 |
 | `references/re-review.md` | 再レビューのときに手順 2・3・4・8 に足す作業（修正コミットの切り出し、由来、前回の判断との整合） |
 | `references/review-standard.md` | 指摘を出す基準（Google Engineering Practices に沿う）。レビュー役と手順 4 が読む |
+| `references/conditional-sources.md` | 条件付きの標準の出典の落とし方と、Standards に渡す添え書き。手順 2 で表の行に当たったときに読む |
 | `pr-review-functionality`（リポジトリの `pr-review/agents/`） | 機能面のレビュー役。手順 2 で立てる |
