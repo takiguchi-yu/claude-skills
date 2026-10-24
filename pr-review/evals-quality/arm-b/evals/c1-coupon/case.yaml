@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c1-coupon
+description: 仕様違反（上限なし）・規約違反（エラーのラップ）・テスト欠落を拾い、Nit を出さないか
+tags: [quality, standards, spec]
+context:
+  scaffold_script: scaffold.sh

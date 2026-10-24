@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c3-user-page
+description: 1 始まりのページ番号の off-by-one と、ログへのメール出力を拾い、PR 以前からある問題を指摘しないか
+tags: [quality, standards, functionality]
+context:
+  scaffold_script: scaffold.sh

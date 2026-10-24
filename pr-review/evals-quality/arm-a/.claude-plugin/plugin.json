@@ -1,0 +1,4 @@
+{
+  "name": "pr-review-eval-arm-a",
+  "description": "pr-review の今の構成（レビュー役 4 体）を eval するためのテスト用プラグイン。skills/ と agents/ は sync.sh が元のスキルからコピーした複製で、ここを直しても元のスキルは変わらない。"
+}

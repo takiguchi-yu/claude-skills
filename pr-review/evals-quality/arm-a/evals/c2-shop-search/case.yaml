@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c2-shop-search
+description: SQL インジェクションと rows.Err 未確認を拾い、既存と同型の書き方を指摘しないか
+tags: [quality, security, functionality]
+context:
+  scaffold_script: scaffold.sh

@@ -1,0 +1,4 @@
+{
+  "name": "pr-review-eval-arm-b",
+  "description": "pr-review の構成 B（Standards 軸を本体に統合し、レビュー役 3 体）を eval するためのテスト用プラグイン。skills/ と agents/ は sync.sh が元のスキルからコピーした複製で、ここを直しても元のスキルは変わらない。"
+}
