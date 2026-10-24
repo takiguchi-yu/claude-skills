@@ -16,6 +16,7 @@
 | `oo-design/` | oo-design | — |
 | `spec-notation/` | spec-notation | — |
 | `diagram/` | diagram | — |
+| `deliverable-review/` | —（dotfiles の `REVIEW.md` から呼ぶ） | deliverable-reviewer |
 
 ## 入れる
 
