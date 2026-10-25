@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c6-review-average
+description: JSON タグの命名規約違反（Standards のみ）と、平均の整数除算・ゼロ除算
+tags: [standards-only]
+context:
+  scaffold_script: scaffold.sh

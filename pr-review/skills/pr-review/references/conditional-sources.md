@@ -2,12 +2,11 @@
 
 `pr-review` の手順 2 で、PR が「条件付きの標準の出典」の表のどれかの行に当たったときに読む。
 
-添え書きは、Standards のサブエージェントの prompt に並べる出典の一覧で、そのパスのすぐ下に**この文面のまま**書く —
-`/code-review` が Standards に運ぶのは出典のパスと smell の基準だけなので、ほかの場所に書くと届かない。
+添え書きは、出典ごとの当て方の注意で、本体が Standards 軸を見るときに、その出典と一緒に読む。
 
 外部の規則は**コミットを固定して** `$PRDIR` に落とす。元のスキル（`web-design-guidelines` など）は毎回最新を取り直すので、
 そのまま使うと回ごとに基準が変わる。版を上げるときは URL の SHA を書き換える。
-`curl` が失敗したら、その行の出典は渡さず、手順 9 で「未実施」と失敗の理由を報告する。
+`curl` が失敗したら、その行の出典は読まず、手順 9 で「未実施」と失敗の理由を報告する。
 
 ## エージェントが読む文書 — writing-for-agents
 
@@ -35,7 +34,7 @@ curl -sf -o "$PRDIR/web-interface-guidelines.md" \
 
 ```markdown
 web-interface-guidelines.md は、review-standard.md の区分を判定する物差しとして使う。冒頭の対象ファイルの指示
-（$ARGUMENTS）と末尾の Output Format は使わず、対象は pr.diff、出力はこの brief の「報告のしかた」に従う。
+（$ARGUMENTS）と末尾の Output Format は使わず、対象は pr.diff、出力は本体の Standards の指摘（ID は std-）にする。
 - 操作できなくなる・データを失う → A。Accessibility・Focus States・Anti-patterns で操作を塞ぐもの
   （ラベルの無い入力、click だけの div、outline を消したままのフォーカス、拡大の禁止など）、Hydration Safety、確認も取り消しも無い破壊的操作
 - 使いにくくなる・本番の条件で困る → B。上以外の Accessibility・Focus States・Forms・Animation の prefers-reduced-motion、

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c7-user-count
+description: context の引数位置の規約違反（Standards のみ）と、err 確認前の defer rows.Close
+tags: [standards-only]
+context:
+  scaffold_script: scaffold.sh

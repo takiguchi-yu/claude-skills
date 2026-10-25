@@ -12,7 +12,7 @@ allowed_tools: [Read, Glob, Grep, Skill, Agent, TodoWrite, Bash, Write, Edit]
 - head はチェックアウト済み。worktree は作らず、カレントディレクトリをそのまま `$WT` として使う
 - PR の diff（`gh pr diff` 相当）は `.pr/pr.diff`、変更ファイルの一覧は `.pr/files.txt`、コミットは `.pr/commits.txt` にある
 - 既存のレビュー・スレッドは無い。再レビューではない
-- レビュー役（`/code-review` の Standards・Spec、`pr-review-functionality`、セキュリティ）は手順どおりに立てること。レビュー役にも、`git diff` の代わりに `.pr/pr.diff` を読むよう伝えること
+- レビュー役（`/code-review` の Spec、`pr-review-functionality`、セキュリティ）は手順どおりに立てること。Standards 軸は手順どおり本体が見ること。レビュー役にも、`git diff` の代わりに `.pr/pr.diff` を読むよう伝えること
 
 - スキルやエージェント定義に出てくる `~/.claude/skills/<名前>/…` と `~/.claude/agents/<名前>.md` は、この環境には無い。読み込まれたプラグインの `skills/<名前>/…` と `agents/<名前>.md` を読むこと（場所は Skill ツールが示すベースディレクトリから辿れる）。レビュー役にも、この読み替えを伝えること
 

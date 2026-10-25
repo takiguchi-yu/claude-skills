@@ -1,6 +1,6 @@
 # 指摘を出す基準
 
-`pr-review` のレビュー役（`pr-review-functionality` と `/code-review` の Standards・Spec）が指摘を探すときと、
+`pr-review` のレビュー役（`pr-review-functionality` と `/code-review` の Spec）と、Standards 軸を見る本体が指摘を探すときと、
 `pr-review` の手順 4 で採否を決めるときに読む。**どの回も、この文書の基準だけで選ぶ。**
 基準が回ごとに変わると、拾う指摘も回ごとに変わり、再実行のたびに新しい指摘が出てくる。
 

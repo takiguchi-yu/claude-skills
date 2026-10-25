@@ -13,8 +13,8 @@ description: PR をレビューし、指摘を pending（下書き）で GitHub 
 そこで [`references/review-standard.md`](references/review-standard.md)（Google Engineering Practices の
 The Standard of Code Review に沿った基準）を超える指摘だけを出す。レビュー役も採否も、毎回この同じ基準で選ぶ。
 
-レビューの中身は、`/code-review`（Standards 軸・Spec 軸）、`/security-review`（脆弱性）、同梱のエージェント
-`pr-review-functionality`（Functionality・Complexity・Tests）に任せる。このスキルの責務は、**指摘を台帳に集め、行き先を決め、
+レビューの中身は、本体（Standards 軸。規約は `/code-review` が集める）、`/code-review`（Spec 軸）、`/security-review`（脆弱性）、同梱のエージェント
+`pr-review-functionality`（Functionality・Complexity・Tests）が見る。このスキルの責務は、**指摘を台帳に集め、行き先を決め、
 diff 上の正しい位置に結びつけ、下書きとして置き、承認を得て公開すること**。手順 7 で追跡が選ばれたら、
 submit 後に返信を確かめて resolve し、approve し、マージを待って後始末するところまでを持つ（[`references/follow-up.md`](references/follow-up.md)）。
 
@@ -120,9 +120,9 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 
 ### レビュー役を立てる
 
-次の 4 体を**同じメッセージで並列に**立てる。Skill ツールで `code-review` を起動し、
-`/code-review` の Process 4（Spawn both sub-agents in parallel）で Standards・Spec のサブエージェントを
-立てるとき、同じメッセージで機能面とセキュリティのレビュー役も立てる。
+次の 3 体を**同じメッセージで並列に**立てる。Skill ツールで `code-review` を起動し、
+`/code-review` の Process 4（Spawn both sub-agents in parallel）では **Spec のサブエージェントだけ**を立て、
+同じメッセージで機能面とセキュリティのレビュー役も立てる。Standards 軸は、3 体の報告が返った後に本体が見る（下の「Standards 軸を本体で見る」）。
 
 **メインセッションの cwd はメインの作業ツリーに置いたまま立てる**（立てる前に `pwd` で確かめる）。
 レビュー役には `$WT` を絶対パスで渡すので、`$WT` へ `cd` する必要は無い。`/security-review` は起動時に
@@ -131,7 +131,8 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 
 | レビュー役 | 立て方 | 見るもの |
 | --- | --- | --- |
-| Standards・Spec（2 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 規約違反と smell／仕様との差分 |
+| Spec（1 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 仕様との差分 |
+| Standards（本体） | 下の「Standards 軸を本体で見る」 | 規約違反と smell |
 | 機能面（1 体） | Agent ツールで `subagent_type: pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
 | セキュリティ（1 体） | Agent ツールで `subagent_type: general-purpose`・`model: opus`。中で `/security-review` を起動する | この PR で入った、悪用経路のある脆弱性 |
 
@@ -139,7 +140,7 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 `$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`。見方・基準・出力形式はエージェント定義が
 持っているので、入力だけを渡せば毎回同じレビューになる。
 
-**`/code-review` の SKILL.md は編集しない。** Standards・Spec に渡す brief は `/code-review` の
+**`/code-review` の SKILL.md は編集しない。** Spec に渡す brief は `/code-review` の
 文面どおりに書き、その末尾に次の節を**この文面のまま**足す（`<worktree の絶対パス>` だけは展開して書く）。以前のレビューで出た指摘の一覧は
 brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 
@@ -148,15 +149,15 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 
 - 最初に ~/.claude/skills/pr-review/references/review-standard.md を読む。
 - 返すのは ~/.claude/skills/pr-review/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
-  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。smell は B に当たるものだけ返す。
+  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。
 - 出力形式は ~/.claude/agents/pr-review-functionality.md の「出力形式」節に従う。
-  ID の接頭辞は Standards なら std、Spec なら spec。コードは貼らずに path:line で指す。
+  ID の接頭辞は spec。コードは貼らずに path:line で指す。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
 ```
 
 **PR が下の表（条件付きの標準の出典）の条件に当たれば、`/code-review` の Process 3 で集める標準の出典に、その行の出典を足す。**
 当たった行があれば [`references/conditional-sources.md`](references/conditional-sources.md) を読み、その行の節に従って
-出典を落とし、添え書きを Standards のサブエージェントの prompt に書く。
+出典を落とし、本体が Standards 軸を見るときに、その出典と添え書きも読む。
 
 | 条件 | conditional-sources.md の節 |
 | --- | --- |
@@ -185,7 +186,7 @@ Skill ツールで `security-review` を起動し、その指示どおりにセ�
 `files.txt` が `.md` だけなら、セキュリティのレビュー役は立てない（`/security-review` は文書への指摘を除外する）。
 手順 9 で「セキュリティは文書だけの PR のため未実施」と報告する。エラー文だけが返ったときも未実施として、エラー文を理由に控える。
 
-Standards・Spec のサブエージェントは `model: opus` で立てる（`pr-review-functionality` は定義で opus に固定してある）。
+Spec のサブエージェントは `model: opus` で立てる（`pr-review-functionality` は定義で opus に固定してある）。
 手順 4・5 でコードを読み直すときも `$WT` 配下のパスを読む。
 
 `/code-review` は Spec 軸のために `docs/agents/issue-tracker.md` を要求する。無いリポジトリでも、
@@ -193,15 +194,24 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
 **Standards 軸だけで進め、手順 9 で「Spec 軸は spec が見つからず未実施」と報告する** — レビューは Spec 軸が無くても成立する。
 `/code-review` が spec の場所を尋ねる場面でも、`intent.md` を spec として渡して進める。
 
+### Standards 軸を本体で見る
+
+3 体の報告が返ったら、本体が次の順で見る。
+
+1. `/code-review` の Process 3（Identify the standards sources）で集めた規約文書と smell baseline、上の表で当たった出典と添え書きを読む
+2. `$PRDIR/pr.diff` を、規約の 1 条ずつ・smell の 1 項目ずつと突き合わせ、`$PRDIR/standards-check.md` に 1 条 1 行で「該当」か「非該当」かを書く。該当 1 件を Standards の指摘 1 件とする
+3. 指摘を `references/review-standard.md` の「出すもの」に当たるものに絞り、残った 1 件ずつに ID（`std-`）・場所（path:line）・要点（何が規約に反するか）・区分・根拠（規約のファイルと条）・直し方の案を控える。`standards-check.md` の該当の行には、その ID か、絞って外した理由を書き足す。他のレビュー役の報告と同じ項目なので、手順 3 の台帳にそのまま写せる
+
 **完了条件**: HEAD が `headRefOid` と一致し、`$PRDIR` に `pr.diff` `files.txt` `commits.txt` `intent.md`
-があり、4 体の報告が手元にある（Spec 軸とセキュリティは未実施でもよい。その場合は理由が控えてある）。
-条件付きの標準の出典の表の全行について、当たったかと、当たった行の出典と添え書きを Standards に渡したか（渡せなかったなら理由）が控えてある。
+があり、3 体の報告が手元にある（Spec 軸とセキュリティは未実施でもよい。その場合は理由が控えてある）。
+`standards-check.md` に規約文書の全条と smell baseline の全項目が載り、該当の行にはすべて `std-` の ID か外した理由がある。
+条件付きの標準の出典の表の全行について、当たったかと、当たった行の出典と添え書きを本体の Standards 軸で読んだか（読めなかったなら理由）が控えてある。
 機能面の報告の「網羅」に `files.txt` の全ファイルが載っている。欠けたファイルがあれば、機能面のレビュー役を
 入力の「対象ファイル」に欠けた一覧を渡して 1 回だけ立て直す（それでも欠けたら、手順 9 で欠けたファイルを報告する）。
 
 ## 手順 3 — 台帳に集める
 
-報告に出た指摘を、**1 指摘 = 1 行**の台帳 `.scratch/pr-<number>/ledger.md` に集める。
+3 体の報告に出た指摘と、本体が控えた Standards の指摘を、**1 指摘 = 1 行**の台帳 `.scratch/pr-<number>/ledger.md` に集める。
 このレビューの指摘の置き場所は台帳だけにする。報告は保存しないので、コメント本文を書くのに要る根拠と
 直し方の案も台帳に写す。手順 4 以降は台帳から読む。
 
@@ -219,7 +229,7 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
 - 報告の指摘は全部載せる。行き先と理由の列は手順 4 で埋める。
 - 同じ場所・同じ論点が複数の報告から出たら 1 行にまとめ、ID の列に全部の ID を `=` でつないで書く。
 
-**完了条件**: 4 体の報告に出た指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
+**完了条件**: 3 体の報告と本体の Standards の指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
 
 ## 手順 4 — 行き先を決めてインラインコメントに変換する
 
@@ -451,5 +461,5 @@ submit 済みのレビューへの返信の追跡、または中断した追跡�
 | `references/comment-format.md` | Conventional Comments に沿った本文の書式と、submit の総評・追い返信・approve の本文の型 |
 | `references/re-review.md` | 再レビューのときに手順 2・3・4・8 に足す作業（修正コミットの切り出し、由来、前回の判断との整合） |
 | `references/review-standard.md` | 指摘を出す基準（Google Engineering Practices に沿う）。レビュー役と手順 4 が読む |
-| `references/conditional-sources.md` | 条件付きの標準の出典の落とし方と、Standards に渡す添え書き。手順 2 で表の行に当たったときに読む |
+| `references/conditional-sources.md` | 条件付きの標準の出典の落とし方と、本体が Standards 軸で読む添え書き。手順 2 で表の行に当たったときに読む |
 | `pr-review-functionality`（リポジトリの `pr-review/agents/`） | 機能面のレビュー役。手順 2 で立てる |

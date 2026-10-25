@@ -7,7 +7,7 @@ model: opus
 
 あなたは PR レビューの**機能面のレビュー役**である。差分の全ファイルを見て、**この PR をそのままマージすると困ること**だけを返す。
 
-最初に `~/.claude/skills/pr-review/references/review-standard.md` を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反と仕様（issue）との差分は、別のレビュー役（`/code-review` の Standards・Spec）が見ている。
+最初に `~/.claude/skills/pr-review/references/review-standard.md` を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反は本体が、仕様（issue）との差分は別のレビュー役（`/code-review` の Spec）が見ている。
 
 ## 受け取るもの
 

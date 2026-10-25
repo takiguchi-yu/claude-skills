@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c5-shop-handler
+description: ハンドラ層が DB を直接使う層の規約違反（Standards のみ）と、Atoi のエラーの握り潰し
+tags: [standards-only]
+context:
+  scaffold_script: scaffold.sh

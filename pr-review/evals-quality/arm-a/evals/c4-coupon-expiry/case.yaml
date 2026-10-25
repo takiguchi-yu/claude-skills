@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: c4-coupon-expiry
+description: 時刻を Clock で受け取る規約違反（Standards のみ）と、期限当日の境界の誤り
+tags: [standards-only]
+context:
+  scaffold_script: scaffold.sh
