@@ -44,7 +44,7 @@ query($owner:String!,$repo:String!,$number:Int!){
     closingIssuesReferences(first:10){ nodes{ number title body } }
     reviews(states:[PENDING], first:10){ nodes{ id url } }
     submitted: reviews(states:[COMMENTED,APPROVED,CHANGES_REQUESTED], last:20){
-      nodes{ author{ login } commit{ oid } submittedAt url body } }
+      nodes{ author{ login } state commit{ oid } submittedAt url body } }
     reviewThreads(first:100){ totalCount pageInfo{ hasNextPage endCursor }
       nodes{ path line isResolved isOutdated comments(first:1){ nodes{ author{ login } body url state } } } }
   }}}' -F owner=OWNER -F repo=REPO -F number=N
@@ -228,8 +228,10 @@ PR 本文や連結 issue に完了条件が書いてあれば、それを spec �
   A〜C のどれにも当たらない行は「—」）。
 - 報告の指摘は全部載せる。行き先と理由の列は手順 4 で埋める。
 - 同じ場所・同じ論点が複数の報告から出たら 1 行にまとめ、ID の列に全部の ID を `=` でつないで書く。
+  同じ種類の誤りを複数箇所まとめた指摘は、残りの箇所の `path:line` を根拠・直し方の列に写す。
+  別の報告の指摘がその残りの箇所の 1 つを指していれば、それも同じ行にまとめる。
 
-**完了条件**: 3 体の報告と本体の Standards の指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
+**完了条件**: 3 体の報告と本体の Standards の指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID があり、同じ種類の誤りをまとめた行は残りの箇所が根拠・直し方の列にある）。
 
 ## 手順 4 — 行き先を決めてインラインコメントに変換する
 

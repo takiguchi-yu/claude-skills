@@ -19,3 +19,15 @@
    根拠にした `path:line` が `fix.diff` に現れなければ、前回と同じ理由で不採用にする。現れていれば、コードが
    変わっているので改めて判定する。前回インラインや総評に出した論点は、手順 4 の「既出」に当たる。
 4. **総評に由来ごとの件数を足す（手順 8）。** 書式は comment-format.md の「submit の総評」。
+
+## 4 回目以降は A だけを出す
+
+手順 1 の `submitted` のうち、`author.login` が `viewer.login` で、`state` が `COMMENTED` で、`body` が空でないレビューの件数を N とする。
+`COMMENTED` に絞るのは、手順 8 の submit は必ず `COMMENTED` になり、追跡の approve（`APPROVED`）を数えないため。
+初回を 1 回目と数え、今回は N+1 回目のレビューになる。**N が 3 以上なら**、上の 1〜4 に加えて次を行う。
+3 回直しても指摘が収束しないなら、細かな指摘を重ねるより方針を見直すほうが早い
+（Anthropic の Claude Code チームも 3 ラウンドで打ち切る: https://claude.dev/blog/solving-code-review-at-anthropic/ ）。
+
+- **手順 4** — 区分 B・C の行は不採用にする。理由は「基準未満」、括弧内の根拠は review-standard.md の「4 回目以降のレビューでの B・C」と書く。
+  A の行は通常どおり行き先を決める。
+- **手順 8** — 総評に、方針の見直しを促す段落を足す。書式は comment-format.md の「submit の総評」。
