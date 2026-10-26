@@ -12,6 +12,10 @@
 
 出典は `~/.claude/skills/writing-for-agents/SKILL.md`。添え書きは無い。
 リポジトリに書き方の規約が無くても、重複・禁止形・古びる値の写しといった書き方の基準が当たるため足す。
+`pr.diff` がスキルを追加する、スキルの frontmatter（`description`・`disable-model-invocation` など）を変える、
+またはほかのスキルを束ねるルータスキルの本文を変えるなら、`~/.claude/skills/writing-for-agents/SKILL-MECHANICS.md` も出典に足す。
+`writing-for-agents` の `SKILL.md` は、スキルの文書にはこのファイルも読むよう求めている。
+扱うのは frontmatter・起動のしかた・ルータスキルだけなので、それ以外の本文の変更なら足さない。
 
 ## 設計に手を入れている — oo-design
 
