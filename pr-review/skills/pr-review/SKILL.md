@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: PR をレビューし、指摘を pending（下書き）で GitHub に置いて、人の確認後に submit する。WHEN - PR の URL や番号とともにレビューを頼まれた（投稿すると明言されていなくても）、下書きのレビューを submit したい、submit したレビューへの返信を確かめて resolve・approve し、マージ後の後始末まで追跡したい。受けた指摘に対応する側は pr-comments を使う。
+description: PR をレビューし、指摘を pending（下書き）で GitHub に置いて、人の確認後に submit する。WHEN - PR の URL や番号とともにレビューを頼まれた（投稿すると明言されていなくても）、下書きのレビューを submit したい、submit したレビューへの返信を確かめて resolve・approve し、マージ後の後始末まで追跡したい、自分宛てのレビュー依頼を探す・監視したい。受けた指摘に対応する側は pr-comments を使う。
 ---
 
 # PR をレビューして pending 経由で投稿する
@@ -445,6 +445,11 @@ mutation($reviewId:ID!,$body:String!){
 submit 済みのレビューへの返信の追跡、または中断した追跡の再開を頼まれたら、手順 1 で PR の情報を取ったあと、
 手順 2 は worktree の作成だけを行い、手順 3〜8 と再レビューの判定を飛ばして [`references/follow-up.md`](references/follow-up.md) の「入口」に従う。
 
+## レビュー依頼を探すとき・監視するとき
+
+自分宛てのレビュー依頼を探すとき、`/loop` などで定期的に監視するときは、[`references/watch.md`](references/watch.md) を読み、
+対象を `scripts/list_review_targets.py` で集めて振り分ける。
+
 ## dry-run で止めたいとき
 
 ユーザーが「投稿はしないで内容だけ見せて」と言ったら、**手順 6 の dry-run までで止める**。
@@ -458,7 +463,9 @@ submit 済みのレビューへの返信の追跡、または中断した追跡�
 | `scripts/check_mention.py` | 本文の最初のメンションが PR の作者と一致するかを判定する。作者は自分で `gh` から取る |
 | `scripts/pretool_check_mention.py` | PreToolUse フック（matcher `Bash`）。submit・approve・`gh pr comment` の本文を `check_mention.py` で照合し、不一致なら実行させない。作者が自分の PR は対象外 |
 | `scripts/post_pending_review.py` | pending レビューを作り、スレッドを 1 件ずつ足す。`--dry-run` あり |
+| `scripts/list_review_targets.py` | open の PR の `reviewRequests`・`reviews` を GraphQL で直接読み、自分個人へのレビュー依頼と自分がレビュー済みの PR を列挙する。最後の行に、見た件数と対象の件数を出す |
 | `scripts/wait_for_replies.py` | submit 後の反応（自分のスレッドへの返信・会話コメント・再依頼・他人の resolve・`--head` からの push・クローズ／マージ）が届くまで待ち、JSON に書き出す。判定はしない |
+| `references/watch.md` | レビュー依頼を探す・監視するときの、対象の集め方（`list_review_targets.py`）・`reasons` での振り分け・報告の型 |
 | `references/follow-up.md` | submit 後の追跡。返信を確かめて resolve か追い返信をし、approve し、マージを待って後始末するまでの手順と歯止め |
 | `references/comment-format.md` | Conventional Comments に沿った本文の書式と、submit の総評・追い返信・approve の本文の型 |
 | `references/re-review.md` | 再レビューのときに手順 2・3・4・8 に足す作業（修正コミットの切り出し、由来、前回の判断との整合） |
