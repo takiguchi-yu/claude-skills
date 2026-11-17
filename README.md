@@ -16,6 +16,7 @@
 | `oo-design/` | oo-design | — |
 | `spec-notation/` | spec-notation | — |
 | `diagram/` | diagram | — |
+| `sumi-shu/` | sumi-shu（デザインシステム。HTML・Artifact の見た目と図の決まり、ページに貼る CSS） | — |
 | `deliverable-review/` | —（dotfiles の `REVIEW.md` から呼ぶ） | deliverable-reviewer |
 
 ## 入れる

@@ -1,0 +1,62 @@
+/* Sumi Shu の部品の CSS。tokens.css の変数（--paper, --ink, --shu, --space-*, --font-*）を読む。
+   ページには tokens.css の後に貼る。先頭の @import の行は貼らず、同じ URL を <link> で <head> に置く */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.85 var(--font-sans); -webkit-font-smoothing: antialiased; }
+
+/* Page: full width. Only paragraphs stop at 45em. */
+.page { max-width: none;
+  padding: var(--space-6) max(var(--space-3), env(safe-area-inset-right, 0px)) var(--space-6) max(var(--space-3), env(safe-area-inset-left, 0px)); }
+@media (min-width: 760px) { .page { padding-left: max(var(--space-5), env(safe-area-inset-left, 0px)); padding-right: max(var(--space-5), env(safe-area-inset-right, 0px)); } }
+.page p { max-width: 45em; margin: 0; }
+.page p + p { margin-top: var(--space-3); }
+
+/* Masthead: caption line, title, heavy rule, conclusion. */
+.masthead { padding-bottom: var(--space-4); border-bottom: 3px solid var(--rule-strong); margin-bottom: 0; }
+.masthead .kicker { font-size: 13px; line-height: 1.7; color: var(--ink-3); letter-spacing: 0.04em; margin: 0 0 var(--space-2); }
+.masthead h1 { font-size: 40px; line-height: 1.3; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+
+/* Row: label column fixed at 10em, content takes the rest. Rows are separated by hairlines, never boxes. */
+.row { display: grid; grid-template-columns: 10em minmax(0, 1fr); column-gap: var(--space-5); /* 見出し列は全角 6 字の見出しが収まる幅で固定し、本文を見出しのすぐ右に置く */
+  padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
+.row > .k { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
+.row > .v { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
+.row > .v :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
+.row > .v > h2 { font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
+.row.conclusion > .k { color: var(--shu); }
+.row.conclusion > .v { font-size: 20px; line-height: 1.75; font-weight: 500; }
+@media (max-width: 759px) { .row { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-2); } }
+
+/* Table: horizontal hairlines only. Header text small and muted over a heavy rule. */
+.scroll { overflow-x: auto; }
+.scroll > table { min-width: 36em; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.7; }
+th, td { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); border-bottom: 1px solid var(--rule); }
+thead th { font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: 0.04em; border-bottom: 2px solid var(--rule-strong); white-space: nowrap; }
+td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+tr.hl > td { background: var(--shu-soft); }
+.is-shu { color: var(--shu); font-weight: 600; }
+.is-strong { font-weight: 700; }
+
+/* Note: a recommendation or warning. A short shu rule on top, no box, no fill. */
+.note { border-top: 2px solid var(--shu); padding-top: var(--space-2); max-width: 45em; }
+.note > .tag { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--shu); margin-bottom: var(--space-1); }
+
+/* Code */
+code, pre, kbd { font-family: var(--font-mono); font-size: 0.875em; }
+:not(pre) > code { background: var(--sunk); padding: 1px 5px; border-radius: var(--radius-1); }
+pre { background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-2); margin: 0; overflow-x: auto; line-height: 1.6; }
+
+/* Pair: two things compared side by side, each with a caption. */
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: var(--space-4); }
+.pair > div { min-width: 0; display: grid; gap: var(--space-1); align-content: start; }
+.caption, figcaption { font-size: 13px; line-height: 1.7; color: var(--ink-3); }
+
+figure { margin: 0; }
+figure svg { display: block; width: 100%; height: auto; }
+figure.scroll > svg { width: auto; max-width: none; } /* 等倍で描き、狭い画面では .scroll の中で横に流す */
+a { color: var(--shu); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+ul, ol { margin: 0; padding-left: 1.4em; }
+li + li { margin-top: var(--space-1); }
+:focus-visible { outline: 2px solid var(--shu); outline-offset: 2px; }
+.legend { list-style: none; padding-left: 0; }

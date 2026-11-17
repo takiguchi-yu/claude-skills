@@ -1,0 +1,22 @@
+/* Sumi Shu のトークン（色・余白・角丸・書体）。ページの <style> の先頭に貼る。値の正本はこのファイル */
+:root {
+  color-scheme: light;
+  --paper: #ffffff; --sunk: #f3f3f1; --ink: #1a1a1a; --ink-2: #47474a; --ink-3: #6b6b67;
+  --rule: #d6d6d2; --rule-strong: #1a1a1a; --shu: #c8321a; --shu-soft: #fbe9e4; --on-shu: #ffffff;
+  --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px; --space-5: 40px; --space-6: 64px;
+  --radius-0: 0; --radius-1: 2px; --radius-2: 4px;
+  --font-sans: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #141414; --sunk: #1f1f1e; --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d;
+    --rule: #3a3a38; --rule-strong: #ededea; --shu: #ff7759; --shu-soft: #3b1d16; --on-shu: #141414;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #141414; --sunk: #1f1f1e; --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d;
+  --rule: #3a3a38; --rule-strong: #ededea; --shu: #ff7759; --shu-soft: #3b1d16; --on-shu: #141414;
+}
