@@ -21,7 +21,7 @@ body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.
   padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
 .row > .k { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
 .row > .v { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
-.row > .v :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
+:is(.row > .v, .a3 .a3-box) :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
 .row > .v > h2 { font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
 .row.conclusion > .k { color: var(--shu); }
 .row.conclusion > .v { font-size: 20px; line-height: 1.75; font-weight: 500; }
@@ -60,3 +60,15 @@ ul, ol { margin: 0; padding-left: 1.4em; }
 li + li { margin-top: var(--space-1); }
 :focus-visible { outline: 2px solid var(--shu); outline-offset: 2px; }
 .legend { list-style: none; padding-left: 0; }
+
+/* A3: 計画のページの骨組み。左に「なぜ・どこにいるか」、右に「どうするか・何が残るか」を 3 欄ずつ。1100px 未満は 1 列 */
+.a3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-5);
+  border-bottom: 1px solid var(--rule); }
+.a3 > .a3-col { min-width: 0; display: grid; align-content: start; }
+.a3 > .a3-col + .a3-col { border-left: 1px solid var(--rule); padding-left: var(--space-5); }
+.a3 .a3-box { min-width: 0; display: grid; gap: var(--space-3); align-content: start;
+  padding-block: var(--space-4); border-top: 1px solid var(--rule); }
+.a3 .a3-box:first-child { border-top: 0; }
+.a3 .a3-box > h2:first-child { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
+.a3 .a3-box > h2 .no { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--ink-3); margin-right: var(--space-2); }
+@media (max-width: 1099px) { .a3 { grid-template-columns: minmax(0, 1fr); } .a3 > .a3-col + .a3-col { border-left: 0; padding-left: 0; } .a3 > .a3-col + .a3-col > .a3-box:first-child { border-top: 1px solid var(--rule); } }
