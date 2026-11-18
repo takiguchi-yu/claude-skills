@@ -16,16 +16,19 @@ body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.
 .masthead .kicker { font-size: 13px; line-height: 1.7; color: var(--ink-3); letter-spacing: 0.04em; margin: 0 0 var(--space-2); }
 .masthead h1 { font-size: 40px; line-height: 1.3; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
 
-/* Row: label column fixed at 10em, content takes the rest. Rows are separated by hairlines, never boxes. */
-.row { display: grid; grid-template-columns: 10em minmax(0, 1fr); column-gap: var(--space-5); /* 見出し列は全角 6 字の見出しが収まる幅で固定し、本文を見出しのすぐ右に置く */
-  padding-block: var(--space-4); border-bottom: 1px solid var(--rule); }
-.row > .k { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
+.page { counter-reset: sec; }
+/* Row: 見出し（.k）を本文（.v）の上に置く。見出しの上の余白を下より大きく取り、見出しを下の本文に近づける。節の間は罫線だけで区切る */
+.row { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3);
+  padding-top: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--rule); }
+.row > .k { font-size: 25px; line-height: 1.4; font-weight: 700; letter-spacing: 0.01em; color: var(--ink); text-wrap: balance; overflow-wrap: anywhere; }
+.row:not(.conclusion) > .k::before { counter-increment: sec; content: counter(sec, decimal-leading-zero);
+  display: block; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: var(--space-1); }
 .row > .v { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
 :is(.row > .v, .a3 .a3-box) :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
 .row > .v > h2 { font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
+.row.conclusion { padding-top: var(--space-5); }
 .row.conclusion > .k { color: var(--shu); }
 .row.conclusion > .v { font-size: 20px; line-height: 1.75; font-weight: 500; }
-@media (max-width: 759px) { .row { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-2); } }
 
 /* Table: horizontal hairlines only. Header text small and muted over a heavy rule. */
 .scroll { overflow-x: auto; }
@@ -74,6 +77,8 @@ li + li { margin-top: var(--space-1); }
 @media (max-width: 1099px) { .a3 { grid-template-columns: minmax(0, 1fr); } .a3 > .a3-col + .a3-col { border-left: 0; padding-left: 0; } .a3 > .a3-col + .a3-col > .a3-box:first-child { border-top: 1px solid var(--rule); } }
 
 /* 付録: 本文の後ろに 1 つ。閉じた状態で置き、質疑のときに開く */
+.appendix .row > .k::before { content: none; counter-increment: none; }
+.appendix .row { padding-top: var(--space-5); }
 .appendix { margin-top: var(--space-5); border-top: 3px solid var(--rule-strong); }
 .appendix > summary { cursor: pointer; padding-block: var(--space-4); font-size: 20px; line-height: 1.5; font-weight: 700; color: var(--ink-2); }
 .appendix > summary::marker { color: var(--ink-3); }
