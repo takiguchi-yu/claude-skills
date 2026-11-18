@@ -72,3 +72,9 @@ li + li { margin-top: var(--space-1); }
 .a3 .a3-box > h2:first-child { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
 .a3 .a3-box > h2 .no { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--ink-3); margin-right: var(--space-2); }
 @media (max-width: 1099px) { .a3 { grid-template-columns: minmax(0, 1fr); } .a3 > .a3-col + .a3-col { border-left: 0; padding-left: 0; } .a3 > .a3-col + .a3-col > .a3-box:first-child { border-top: 1px solid var(--rule); } }
+
+/* 付録: 本文の後ろに 1 つ。閉じた状態で置き、質疑のときに開く */
+.appendix { margin-top: var(--space-5); border-top: 3px solid var(--rule-strong); }
+.appendix > summary { cursor: pointer; padding-block: var(--space-4); font-size: 20px; line-height: 1.5; font-weight: 700; color: var(--ink-2); }
+.appendix > summary::marker { color: var(--ink-3); }
+.appendix[open] > summary { border-bottom: 1px solid var(--rule); }
