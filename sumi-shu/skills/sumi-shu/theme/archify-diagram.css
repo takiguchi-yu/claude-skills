@@ -35,3 +35,7 @@ html:root[data-preset] h1, html:root[data-preset] .card h3,
 html:root[data-preset] .header-row::after, html:root[data-preset] .diagram-container::after {
   font-family: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
+/* 種類の区別は色でなく線で残す（色は ink と shu だけにするため）: Database は薄い地、Cloud は太い線、External は破線、Message Bus は点線、Region は元の破線 */
+.c-cloud { stroke-width: 3px !important; }
+.c-external { stroke-dasharray: 5 3 !important; }
+.c-messagebus { stroke-dasharray: 1 3 !important; stroke-linecap: round; }

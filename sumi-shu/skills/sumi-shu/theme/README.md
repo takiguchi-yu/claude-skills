@@ -7,7 +7,7 @@ archify・html-plan の出力は、`theme/` の CSS で幅・色・書体だけ�
 | 出力 | 足す CSS | 足す場所と時機 |
 | --- | --- | --- |
 | `archify` の explainer | `theme/archify-explainer.css`（幅・色・書体） | 最後の `finalize` が通った後の HTML。`finalize` を回し直したら、もう一度足す |
-| `archify` の図のページ | `theme/archify-diagram.css`（色・書体） | テンプレートの `<style>` より後ろ。幅は触らない（JS が図を 1 画面に収める幅を計算している） |
+| `archify` の図のページ | `theme/archify-diagram.css`（色・書体。色で表されていた種類の区別は線で残す: Cloud は太い枠、External は破線、Message Bus は点線） | テンプレートの `<style>` より後ろ。幅は触らない（JS が図を 1 画面に収める幅を計算している） |
 | `html-plan` | `theme/html-plan.css`（幅・色・書体） | pack 前の `plan.html` の `<link rel="stylesheet" href="htmlplan.css">` より後ろ |
 
 - 状態を表す色（archify の `--good` `--caution` `--bad`、html-plan の `--green` `--amber` `--red` など）は、図表の意味を壊さないよう上書きしない
