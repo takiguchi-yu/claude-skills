@@ -4,11 +4,15 @@
 
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.85 var(--font-sans); -webkit-font-smoothing: antialiased; }
 
-/* Page: full width. Only paragraphs stop at 45em. */
-.page { max-width: none;
+/* Page: 外枠は 1280px までの広い幅で中央に置く（タイトル・図・表・A3 の 2 列がこの幅）。本文と節の見出しは、中央の 45em の列に入れる */
+.page { --col: 720px; /* 文章の列の幅。本文 16px の 45em（全角 45 字前後）。見出し・結論の文字が大きくても同じ幅にそろえる */
+  max-width: 1280px; margin-inline: auto;
   padding: var(--space-6) max(var(--space-3), env(safe-area-inset-right, 0px)) var(--space-6) max(var(--space-3), env(safe-area-inset-left, 0px)); }
 @media (min-width: 760px) { .page { padding-left: max(var(--space-5), env(safe-area-inset-left, 0px)); padding-right: max(var(--space-5), env(safe-area-inset-right, 0px)); } }
 .page p { max-width: 45em; margin: 0; }
+/* 文章の列: 本文・節の見出し・箇条書き・説明・注記は 45em の列。広げるもの（図・表・A3・並べて比べるもの）だけが外枠の幅を使う */
+.row > .k, .row > .v > :not(figure, .scroll, .a3, .pair) { width: min(var(--col), 100%); max-width: none; justify-self: center; }
+.appendix > summary { width: min(var(--col), 100%); margin-inline: auto; }
 .page p + p { margin-top: var(--space-3); }
 
 /* Masthead: caption line, title, heavy rule, conclusion. */
@@ -57,7 +61,7 @@ pre { background: var(--sunk); padding: var(--space-3); border-radius: var(--rad
 
 figure { margin: 0; }
 figure svg { display: block; width: 100%; height: auto; }
-figure.scroll > svg { width: auto; max-width: none; } /* 等倍で描き、狭い画面では .scroll の中で横に流す */
+figure.scroll > svg { width: auto; max-width: none; margin-inline: auto; } /* 等倍で描き、外枠より狭い図は中央に置く。外枠より広い図は .scroll の中で横に流す */
 a { color: var(--shu); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 ul, ol { margin: 0; padding-left: 1.4em; }
 li + li { margin-top: var(--space-1); }

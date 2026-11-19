@@ -14,4 +14,4 @@ archify・html-plan の出力は、`theme/` の CSS で幅・色・書体だけ�
 - archify の図を SVG・画像で書き出したものは対象外。書き出しの処理が独自の書体を埋め込むため、上書きが届かない
 - CSS を足した explainer は、archify の provenance（成果物の SHA-256 との照合）の検査から外れる。報告には「検査後に幅と配色の CSS を足した」と書く
 - スキルの更新で効かなくなったら、`archify/explainer/reader.css`、`archify/assets/template.html`、`html-plan/runtime/htmlplan.css` の変数名を読み直して `theme/` の CSS を直す
-- 寄せた後の確かめ: 幅（図のページを除く）・地・文字・強調色・書体が、sumi-shu の `tokens.css` の値と同じ
+- 寄せた後の確かめ: 地・文字・強調色・書体が、sumi-shu の `tokens.css` の値と同じ（幅は、第三者スキルでは全幅と `p` の 45em のままにする。sumi-shu 本体の「1280px の外枠と 720px の文章の列」とは別）
