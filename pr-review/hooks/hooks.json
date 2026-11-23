@@ -1,0 +1,17 @@
+{
+  "description": "PR への投稿コマンドの本文のメンションが PR の作者と一致しないとき、実行前に止める",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/pr-review/scripts/pretool_check_mention.py\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

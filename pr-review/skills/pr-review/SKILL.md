@@ -406,7 +406,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/check_mention.py \
 
 終了コード 0 が通過の合図。1 なら出力が示す login に直して照合し直す。2（作者を取得できない）なら投稿しない。
 
-同じ照合は、PreToolUse フック `scripts/pretool_check_mention.py` が投稿コマンドの実行前にも掛ける（ユーザー設定に登録している場合）。
+同じ照合は、PreToolUse フック `scripts/pretool_check_mention.py` が投稿コマンドの実行前にも掛ける（pr-review プラグインの `hooks/hooks.json` が登録する）。
 フックに止められたら、理由に示された宛先・渡し方に直して投稿し直す。本文は `-F body=@<file>` / `--body-file <file>` で、
 PR は node ID（`PR_…` / `PRR_…`）か番号をリテラルで渡す — 変数で渡すとフックが特定できずに止める。
 

@@ -2,7 +2,7 @@
 """PR への投稿コマンドを、メンション先が PR の作者と一致しないときに止める PreToolUse フック（Bash）。
 
 SKILL.md 手順 8 の照合（check_mention.py）を、手順を飛ばしても掛かるようにするためのもの。
-ユーザー設定（~/.claude/settings.json）の PreToolUse・matcher "Bash" に登録して使う。
+pr-review プラグインの hooks/hooks.json が、PreToolUse・matcher "Bash" に登録する。
 
 対象にする投稿:
   - gh api graphql の submitPullRequestReview / addPullRequestReview（本文を -F body=@<file> で渡すもの）

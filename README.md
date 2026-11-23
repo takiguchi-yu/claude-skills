@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | `complete-task` | complete-task | `complete-task:ct-researcher` / `:ct-review-accuracy` / `:ct-review-ux` / `:ct-review-risk` / `:ct-verifier` |
 | `pr-comments` | pr-comments | `pr-comments:pr-comment-verifier` |
-| `pr-review` | pr-review | `pr-review:pr-review-functionality` |
+| `pr-review` | pr-review（投稿の宛先を照合する PreToolUse フック `hooks/hooks.json` も入る） | `pr-review:pr-review-functionality` |
 | `consistency-check` | consistency-check | — |
 | `oo-design` | oo-design | — |
 | `spec-notation` | spec-notation | — |
@@ -23,6 +23,19 @@
 スキルは `/<プラグイン>:<スキル>` で呼ぶ。名前が衝突しなければ素の `/<スキル>` でも呼べる。
 スキルが同梱物を指すときは、SKILL.md では `${CLAUDE_SKILL_DIR}`（そのスキルのディレクトリ）と `${CLAUDE_PLUGIN_ROOT}`（プラグインのルート）を使う。
 この 2 つが展開されるのは SKILL.md の本文だけなので、`references/` やエージェント定義には SKILL.md から展開済みのパスを渡す。
+
+### pr-review のフック
+
+pr-review プラグインを有効にすると、pr-review スキルを使っていないセッションでも、Bash の実行前に `pretool_check_mention.py` が走る。
+
+| 項目 | 内容 |
+| --- | --- |
+| 対象 | `gh pr comment` / `gh pr review` で本文をファイル（`--body-file`・`-F`）で渡すもの、`gh api graphql` の `submitPullRequestReview` / `addPullRequestReview` |
+| 止める条件 | 本文の最初のメンションが PR の作者でない（メンションが無いときを含む）、または PR・本文・作者を判定できない。GraphQL で本文を `-f body=` で直接渡したときも止める |
+| 対象外 | 自分が作者の PR、`gh pr comment` / `gh pr review` の `--body` の直書き、本文を持たない呼び出し、スレッドへの返信 |
+
+コマンドの文字列で判定するので、`echo` の引数などに投稿コマンドの形があっても照合が掛かる。
+フックだけを外す設定は無いので、外したいときは `claude plugin disable pr-review@claude-skills` でプラグインごと無効にする。
 
 ## 入れる
 
