@@ -2,7 +2,8 @@
 """PR への投稿コマンドを、メンション先が PR の作者と一致しないときに止める PreToolUse フック（Bash）。
 
 SKILL.md 手順 8 の照合（check_mention.py）を、手順を飛ばしても掛かるようにするためのもの。
-pr-review プラグインの hooks/hooks.json が、PreToolUse・matcher "Bash" に登録する。
+プラグイン my の pr-review/hooks/hooks.json が、PreToolUse・matcher "Bash" に登録する。
+環境変数 PR_REVIEW_MENTION_HOOK=off のときは何もしない（プラグインごと外さずに、このフックだけを止めるため）。
 
 対象にする投稿:
   - gh api graphql の submitPullRequestReview / addPullRequestReview（本文を -F body=@<file> で渡すもの）
@@ -92,6 +93,8 @@ def target_of(command, cwd):
 
 
 def main():
+    if os.environ.get("PR_REVIEW_MENTION_HOOK") == "off":
+        sys.exit(0)
     try:
         payload = json.load(sys.stdin)
     except json.JSONDecodeError:

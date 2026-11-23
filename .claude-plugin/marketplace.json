@@ -5,54 +5,9 @@
   },
   "plugins": [
     {
-      "name": "complete-task",
-      "source": "./complete-task",
-      "description": "タスクを調査・実行・レビュー・検証まで通して完遂するスキルと、その調査・レビュー・検証役のエージェント 5 体"
-    },
-    {
-      "name": "consistency-check",
-      "source": "./consistency-check",
-      "description": "修正後に参照元を洗い出して修正漏れと矛盾を潰す横断チェックのスキル"
-    },
-    {
-      "name": "deliverable-review",
-      "source": "./deliverable-review",
-      "description": "成果物を渡す前に、そのまま渡すと困る点だけを返すレビュー役のエージェント"
-    },
-    {
-      "name": "diagram",
-      "source": "./diagram",
-      "description": "端末で読む図を Mermaid と mmd2txt で描くスキル"
-    },
-    {
-      "name": "oo-design",
-      "source": "./oo-design",
-      "description": "オブジェクト指向設計の原則と GoF パターン検討表のスキル"
-    },
-    {
-      "name": "pr-comments",
-      "source": "./pr-comments",
-      "description": "PR のレビューコメントを検証して、必要なものだけ対応するスキルと検証役のエージェント"
-    },
-    {
-      "name": "pr-review",
-      "source": "./pr-review",
-      "description": "PR をレビューして pending で投稿するスキルと、機能面のレビュー役のエージェント"
-    },
-    {
-      "name": "rdra",
-      "source": "./rdra",
-      "description": "RDRA で要件定義を組み立てるスキル"
-    },
-    {
-      "name": "spec-notation",
-      "source": "./spec-notation",
-      "description": "EARS・デシジョンテーブル・状態遷移表・契約で仕様を書くスキル"
-    },
-    {
-      "name": "sumi-shu",
-      "source": "./sumi-shu",
-      "description": "デザインシステム Sumi Shu（HTML・Artifact の見た目と図の決まり、ページに貼る CSS）"
+      "name": "my",
+      "source": "./",
+      "description": "自作のスキルと、それが使うサブエージェント・スクリプト・フック。1 ディレクトリに 1 スキルとその部品を置き、ここで列挙する"
     }
   ]
 }

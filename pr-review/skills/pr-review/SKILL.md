@@ -135,7 +135,7 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 | --- | --- | --- |
 | Spec（1 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 仕様との差分 |
 | Standards（本体） | 下の「Standards 軸を本体で見る」 | 規約違反と smell |
-| 機能面（1 体） | Agent ツールで `subagent_type: pr-review:pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
+| 機能面（1 体） | Agent ツールで `subagent_type: my:pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
 | セキュリティ（1 体） | Agent ツールで `subagent_type: general-purpose`・`model: opus`。中で `/security-review` を起動する | この PR で入った、悪用経路のある脆弱性 |
 
 **機能面のレビュー役の prompt には入力だけを書く** — `$WT`、固定点 `origin/<baseRefName>`、
@@ -152,7 +152,7 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 - 最初に ${CLAUDE_SKILL_DIR}/references/review-standard.md を読む。
 - 返すのは ${CLAUDE_SKILL_DIR}/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
   当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。
-- 出力形式は ${CLAUDE_PLUGIN_ROOT}/agents/pr-review-functionality.md の「出力形式」節に従う。
+- 出力形式は ${CLAUDE_SKILL_DIR}/../../agents/pr-review-functionality.md の「出力形式」節に従う。
   ID の接頭辞は spec。コードは貼らずに path:line で指す。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
 ```
@@ -406,7 +406,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/check_mention.py \
 
 終了コード 0 が通過の合図。1 なら出力が示す login に直して照合し直す。2（作者を取得できない）なら投稿しない。
 
-同じ照合は、PreToolUse フック `scripts/pretool_check_mention.py` が投稿コマンドの実行前にも掛ける（pr-review プラグインの `hooks/hooks.json` が登録する）。
+同じ照合は、PreToolUse フック `scripts/pretool_check_mention.py` が投稿コマンドの実行前にも掛ける（プラグイン my の `pr-review/hooks/hooks.json` が登録する。環境変数 `PR_REVIEW_MENTION_HOOK=off` で止まる）。
 フックに止められたら、理由に示された宛先・渡し方に直して投稿し直す。本文は `-F body=@<file>` / `--body-file <file>` で、
 PR は node ID（`PR_…` / `PRR_…`）か番号をリテラルで渡す — 変数で渡すとフックが特定できずに止める。
 

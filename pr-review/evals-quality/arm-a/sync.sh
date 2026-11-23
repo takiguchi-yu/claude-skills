@@ -16,9 +16,9 @@ cp "$SRC/agents/pr-review-functionality.md" agents/
 if [ -f local.patch ]; then
 	patch -p0 --forward --quiet < local.patch
 fi
-# 元のスキルは、エージェントとスキルをプラグイン名付き（pr-review:… や oo-design:…）で呼ぶ。
+# 元のスキルは、エージェントとスキルをプラグイン名付き（my:pr-review-functionality・my:oo-design）で呼ぶ。
 # このプラグインでは全部がこのプラグイン名の下に入るので、呼び名を付け替える。
 PLUGIN="$(python3 -c 'import json; print(json.load(open(".claude-plugin/plugin.json"))["name"])')"
-{ grep -rlE '(pr-review|oo-design):' skills agents || true; } | while IFS= read -r f; do
-	sed -i '' -E "s/(pr-review|oo-design):(pr-review-functionality|oo-design)/$PLUGIN:\2/g" "$f"
+{ grep -rlE 'my:(pr-review-functionality|oo-design)' skills agents || true; } | while IFS= read -r f; do
+	sed -i '' -E "s/my:(pr-review-functionality|oo-design)/$PLUGIN:\1/g" "$f"
 done

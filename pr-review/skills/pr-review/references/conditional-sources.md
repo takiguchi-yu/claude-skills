@@ -19,7 +19,7 @@
 
 ## 設計に手を入れている — oo-design
 
-出典は `oo-design:oo-design` スキル（Skill ツールで読み込む）。`oo-design` は書く側の指針で、そのまま当てると「パターンにできる」という Nit が出るので、
+出典は `my:oo-design` スキル（Skill ツールで読み込む）。`oo-design` は書く側の指針で、そのまま当てると「パターンにできる」という Nit が出るので、
 次を添える。
 
 ```markdown

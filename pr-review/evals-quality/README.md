@@ -10,7 +10,7 @@ pr-review のレビュー役の構成を変えたとき（例: `/code-review` �
 | --- | --- |
 | `arm-a/` | 旧構成 A（レビュー役 4 体）を載せたテスト用プラグイン。`arm-a/local.patch` が、今のスキルを A に戻す |
 | `arm-b/` | 今の構成 B（Standards 軸を本体が見る、レビュー役 3 体）。2026-10-25 に元のスキルへ入れたので、パッチは持たない |
-| `arm-*/sync.sh` | 元のスキル・エージェント（pr-review・pr-review-functionality・code-review と、Standards 軸で使う出典の oo-design・writing-for-agents）を各 arm の `skills` `agents` へコピーし、`local.patch` があれば当てる。元のスキルがプラグイン名付きで呼ぶ `pr-review:pr-review-functionality`・`oo-design:oo-design` は、arm のプラグイン名（`pr-review-eval-arm-a:…` など）に付け替える。実行前に毎回走らせる。コピーを直しても元のスキルは変わらない |
+| `arm-*/sync.sh` | 元のスキル・エージェント（pr-review・pr-review-functionality・code-review と、Standards 軸で使う出典の oo-design・writing-for-agents）を各 arm の `skills` `agents` へコピーし、`local.patch` があれば当てる。元のスキルがプラグイン名付きで呼ぶ `my:pr-review-functionality`・`my:oo-design` は、arm のプラグイン名（`pr-review-eval-arm-a:…` など）に付け替える。実行前に毎回走らせる。コピーを直しても元のスキルは変わらない |
 | `arm-a/evals/_shared/base-repo.sh` | 7 ケース共通の fixture（規約文書と既存コードを持つ小さな Go サービス） |
 | `arm-a/evals/<case>/` | `scaffold.sh` が PR ブランチを積み、`prompt.md` が PR 情報を渡し、`graders/` が採点する |
 

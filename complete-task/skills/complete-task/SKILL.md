@@ -9,7 +9,7 @@ description: 与えられたタスクの実行責任者として、調査・実�
 
 このスキルは `/complete-task` で明示起動されたときだけ実行する。自分の判断で発動しない — サブエージェントを何体も回す重い手順であり、軽いタスクに使うとコストを無駄にする。
 
-サブエージェント（`ct-researcher` など）は、このスキルと同じプラグインの `agents/` にある。Agent ツールの `subagent_type` には、プラグイン名を付けた `complete-task:ct-researcher` の形で渡す。
+サブエージェント（`ct-researcher` など）は、このスキルと同じディレクトリの `agents/` にあり、プラグイン `my` に入っている。Agent ツールの `subagent_type` には、プラグイン名を付けた `my:ct-researcher` の形で渡す。
 
 ## 承認なしに実行しない操作
 

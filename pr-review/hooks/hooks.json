@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/pr-review/scripts/pretool_check_mention.py\"",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/pr-review/skills/pr-review/scripts/pretool_check_mention.py\"",
             "timeout": 30
           }
         ]

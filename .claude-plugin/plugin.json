@@ -1,0 +1,26 @@
+{
+  "name": "my",
+  "description": "自作のスキルと、それが使うサブエージェント・スクリプト・フック。1 ディレクトリに 1 スキルとその部品を置き、ここで列挙する",
+  "skills": [
+    "./complete-task/skills",
+    "./consistency-check/skills",
+    "./diagram/skills",
+    "./oo-design/skills",
+    "./pr-comments/skills",
+    "./pr-review/skills",
+    "./rdra/skills",
+    "./spec-notation/skills",
+    "./sumi-shu/skills"
+  ],
+  "agents": [
+    "./complete-task/agents/ct-researcher.md",
+    "./complete-task/agents/ct-review-accuracy.md",
+    "./complete-task/agents/ct-review-risk.md",
+    "./complete-task/agents/ct-review-ux.md",
+    "./complete-task/agents/ct-verifier.md",
+    "./deliverable-review/agents/deliverable-reviewer.md",
+    "./pr-comments/agents/pr-comment-verifier.md",
+    "./pr-review/agents/pr-review-functionality.md"
+  ],
+  "hooks": "./pr-review/hooks/hooks.json"
+}
