@@ -11,7 +11,7 @@
  diff 上の正しい位置に結びつけ、下書きとして置き、承認を得て公開すること**。手順 7 で追跡が選ばれたら、
  submit 後に返信を確かめて resolve し、approve し、マージを待って後始末するところまでを持つ（[`references/follow-up.md`](references/follow-up.md)）。
  
-@@ -120,9 +120,9 @@
+@@ -122,9 +122,9 @@
  
  ### レビュー役を立てる
  
@@ -24,18 +24,18 @@
  
  **メインセッションの cwd はメインの作業ツリーに置いたまま立てる**（立てる前に `pwd` で確かめる）。
  レビュー役には `$WT` を絶対パスで渡すので、`$WT` へ `cd` する必要は無い。`/security-review` は起動時に
-@@ -131,8 +131,7 @@
+@@ -133,8 +133,7 @@
  
  | レビュー役 | 立て方 | 見るもの |
  | --- | --- | --- |
 -| Spec（1 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 仕様との差分 |
 -| Standards（本体） | 下の「Standards 軸を本体で見る」 | 規約違反と smell |
 +| Standards・Spec（2 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 規約違反と smell／仕様との差分 |
- | 機能面（1 体） | Agent ツールで `subagent_type: pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
+ | 機能面（1 体） | Agent ツールで `subagent_type: pr-review:pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
  | セキュリティ（1 体） | Agent ツールで `subagent_type: general-purpose`・`model: opus`。中で `/security-review` を起動する | この PR で入った、悪用経路のある脆弱性 |
  
-@@ -140,7 +139,7 @@
- `$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`。見方・基準・出力形式はエージェント定義が
+@@ -142,7 +141,7 @@
+ `$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`、基準 `${CLAUDE_SKILL_DIR}/references/review-standard.md`。見方・出力形式はエージェント定義が
  持っているので、入力だけを渡せば毎回同じレビューになる。
  
 -**`/code-review` の SKILL.md は編集しない。** Spec に渡す brief は `/code-review` の
@@ -43,13 +43,13 @@
  文面どおりに書き、その末尾に次の節を**この文面のまま**足す（`<worktree の絶対パス>` だけは展開して書く）。以前のレビューで出た指摘の一覧は
  brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
  
-@@ -149,15 +148,15 @@
+@@ -151,15 +150,15 @@
  
- - 最初に ~/.claude/skills/pr-review/references/review-standard.md を読む。
- - 返すのは ~/.claude/skills/pr-review/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
+ - 最初に ${CLAUDE_SKILL_DIR}/references/review-standard.md を読む。
+ - 返すのは ${CLAUDE_SKILL_DIR}/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
 -  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。
 +  当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。smell は B に当たるものだけ返す。
- - 出力形式は ~/.claude/agents/pr-review-functionality.md の「出力形式」節に従う。
+ - 出力形式は ${CLAUDE_PLUGIN_ROOT}/agents/pr-review-functionality.md の「出力形式」節に従う。
 -  ID の接頭辞は spec。コードは貼らずに path:line で指す。
 +  ID の接頭辞は Standards なら std、Spec なら spec。コードは貼らずに path:line で指す。
  - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
@@ -62,7 +62,7 @@
  
  | 条件 | conditional-sources.md の節 |
  | --- | --- |
-@@ -186,7 +185,7 @@
+@@ -188,7 +187,7 @@
  `files.txt` が `.md` だけなら、セキュリティのレビュー役は立てない（`/security-review` は文書への指摘を除外する）。
  手順 9 で「セキュリティは文書だけの PR のため未実施」と報告する。エラー文だけが返ったときも未実施として、エラー文を理由に控える。
  
@@ -71,7 +71,7 @@
  手順 4・5 でコードを読み直すときも `$WT` 配下のパスを読む。
  
  `/code-review` は Spec 軸のために `docs/agents/issue-tracker.md` を要求する。無いリポジトリでも、
-@@ -194,24 +193,15 @@
+@@ -196,24 +195,15 @@
  **Standards 軸だけで進め、手順 9 で「Spec 軸は spec が見つからず未実施」と報告する** — レビューは Spec 軸が無くても成立する。
  `/code-review` が spec の場所を尋ねる場面でも、`intent.md` を spec として渡して進める。
  
@@ -99,16 +99,16 @@
  このレビューの指摘の置き場所は台帳だけにする。報告は保存しないので、コメント本文を書くのに要る根拠と
  直し方の案も台帳に写す。手順 4 以降は台帳から読む。
  
-@@ -229,7 +219,7 @@
- - 報告の指摘は全部載せる。行き先と理由の列は手順 4 で埋める。
- - 同じ場所・同じ論点が複数の報告から出たら 1 行にまとめ、ID の列に全部の ID を `=` でつないで書く。
+@@ -233,7 +223,7 @@
+   同じ種類の誤りを複数箇所まとめた指摘は、残りの箇所の `path:line` を根拠・直し方の列に写す。
+   別の報告の指摘がその残りの箇所の 1 つを指していれば、それも同じ行にまとめる。
  
--**完了条件**: 3 体の報告と本体の Standards の指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
-+**完了条件**: 4 体の報告に出た指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID がある）。
+-**完了条件**: 3 体の報告と本体の Standards の指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID があり、同じ種類の誤りをまとめた行は残りの箇所が根拠・直し方の列にある）。
++**完了条件**: 4 体の報告に出た指摘が、すべて台帳のどこかの行にある（まとめた行は ID の列に全部の ID があり、同じ種類の誤りをまとめた行は残りの箇所が根拠・直し方の列にある）。
  
  ## 手順 4 — 行き先を決めてインラインコメントに変換する
  
-@@ -461,5 +451,5 @@
+@@ -472,5 +462,5 @@
  | `references/comment-format.md` | Conventional Comments に沿った本文の書式と、submit の総評・追い返信・approve の本文の型 |
  | `references/re-review.md` | 再レビューのときに手順 2・3・4・8 に足す作業（修正コミットの切り出し、由来、前回の判断との整合） |
  | `references/review-standard.md` | 指摘を出す基準（Google Engineering Practices に沿う）。レビュー役と手順 4 が読む |
@@ -132,7 +132,7 @@
  
  ## エージェントが読む文書 — writing-for-agents
  
-@@ -34,7 +35,7 @@
+@@ -38,7 +39,7 @@
  
  ```markdown
  web-interface-guidelines.md は、review-standard.md の区分を判定する物差しとして使う。冒頭の対象ファイルの指示
@@ -161,15 +161,15 @@
 +`pr-review` のレビュー役（`pr-review-functionality` と `/code-review` の Standards・Spec）が指摘を探すときと、
  `pr-review` の手順 4 で採否を決めるときに読む。**どの回も、この文書の基準だけで選ぶ。**
  基準が回ごとに変わると、拾う指摘も回ごとに変わり、再実行のたびに新しい指摘が出てくる。
- 
+ 回によって変わるのは、「出さないもの」の「4 回目以降のレビューでの B・C」だけ。
 --- agents/pr-review-functionality.md
 +++ agents/pr-review-functionality.md
 @@ -7,7 +7,7 @@
  
  あなたは PR レビューの**機能面のレビュー役**である。差分の全ファイルを見て、**この PR をそのままマージすると困ること**だけを返す。
  
--最初に `~/.claude/skills/pr-review/references/review-standard.md` を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反は本体が、仕様（issue）との差分は別のレビュー役（`/code-review` の Spec）が見ている。
-+最初に `~/.claude/skills/pr-review/references/review-standard.md` を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反と仕様（issue）との差分は、別のレビュー役（`/code-review` の Standards・Spec）が見ている。
+-最初に、呼び出し元が渡した `review-standard.md`（pr-review スキルの `references/review-standard.md`）を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反は本体が、仕様（issue）との差分は別のレビュー役（`/code-review` の Spec）が見ている。
++最初に、呼び出し元が渡した `review-standard.md`（pr-review スキルの `references/review-standard.md`）を読む。返すのは、その「出すもの」の A〜C に当たる指摘だけで、「出さないもの」は探さない。規約違反と仕様（issue）との差分は、別のレビュー役（`/code-review` の Standards・Spec）が見ている。
  
  ## 受け取るもの
  

@@ -10,7 +10,7 @@ pr-review のレビュー役の構成を変えたとき（例: `/code-review` �
 | --- | --- |
 | `arm-a/` | 旧構成 A（レビュー役 4 体）を載せたテスト用プラグイン。`arm-a/local.patch` が、今のスキルを A に戻す |
 | `arm-b/` | 今の構成 B（Standards 軸を本体が見る、レビュー役 3 体）。2026-10-25 に元のスキルへ入れたので、パッチは持たない |
-| `arm-*/sync.sh` | 元のスキル・エージェント（pr-review・pr-review-functionality・code-review と、Standards 軸で使う出典の oo-design・writing-for-agents）を各 arm の `skills` `agents` へコピーし、`local.patch` があれば当てる。実行前に毎回走らせる。コピーを直しても元のスキルは変わらない |
+| `arm-*/sync.sh` | 元のスキル・エージェント（pr-review・pr-review-functionality・code-review と、Standards 軸で使う出典の oo-design・writing-for-agents）を各 arm の `skills` `agents` へコピーし、`local.patch` があれば当てる。元のスキルがプラグイン名付きで呼ぶ `pr-review:pr-review-functionality`・`oo-design:oo-design` は、arm のプラグイン名（`pr-review-eval-arm-a:…` など）に付け替える。実行前に毎回走らせる。コピーを直しても元のスキルは変わらない |
 | `arm-a/evals/_shared/base-repo.sh` | 7 ケース共通の fixture（規約文書と既存コードを持つ小さな Go サービス） |
 | `arm-a/evals/<case>/` | `scaffold.sh` が PR ブランチを積み、`prompt.md` が PR 情報を渡し、`graders/` が採点する |
 
@@ -139,4 +139,4 @@ A と B の違いは、パッチ、プロンプトのレビュー役の一文（
 - eval の実行はサンドボックスの中で動き、`git` が動かない（`/Library/Developer/CommandLineTools` の読み取りが拒否される）。そこで scaffold の段階で `.pr/pr.diff` などを作り、プロンプトで `gh`・`git` の代わりに使わせている
 - 組み込みの `/security-review` は中で `git diff` を実行するため、セキュリティ役は動かない。A・B のどちらでも同じ条件なので、Standards 軸の比較には影響しない
 - シンボリックリンク先の付属物はサンドボックスから読めないため、`sync.sh` でコピーしている
-- スキルとエージェント定義は `~/.claude/skills/...` を決め打ちで読むが、実行時の HOME は一時ディレクトリで、そこには無い。プロンプトで、プラグイン配下へ読み替えるよう指示している。読み替えは本体とレビュー役の判断に任されるので、回によって失敗することがある（A・B で同じ条件）
+- 実行時の HOME は一時ディレクトリなので、`~/.claude/skills/...` の決め打ちは読めない。pr-review のスキルは `${CLAUDE_SKILL_DIR}` で同梱物を指すので影響しないが、`references/conditional-sources.md` の writing-for-agents の出典だけは決め打ちのまま残る。そこでプロンプトで、プラグイン配下へ読み替えるよう指示している。読み替えは本体とレビュー役の判断に任されるので、回によって失敗することがある（A・B で同じ条件）
