@@ -87,7 +87,7 @@ query($owner:String!,$repo:String!,$number:Int!,$endCursor:String){
 
 ## 手順 5 — 並列で検証する
 
-`pr-comment-verifier` サブエージェントに、判定に進める件を **3〜5 件ずつ束ねて**投げる。同じファイルに関する指摘は同じ束にまとめ、同じファイルを何度も読ませない。
+`pr-comment-verifier` サブエージェント（Agent ツールの `subagent_type: pr-comments:pr-comment-verifier`）に、判定に進める件を **3〜5 件ずつ束ねて**投げる。同じファイルに関する指摘は同じ束にまとめ、同じファイルを何度も読ませない。
 
 各サブエージェントへ渡すもの:
 

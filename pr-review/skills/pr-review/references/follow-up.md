@@ -20,7 +20,7 @@ submit 済みのレビューの追跡だけを頼まれたとき、中断した�
 `--since` には submit の時刻を渡す。手順 8 の `submitPullRequestReview` が返したレビューの `submittedAt` を使う。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
+python3 <スキルのディレクトリ>/scripts/wait_for_replies.py \
   --repo <owner>/<repo> --number <number> --since <submittedAt> \
   --out <PRDIR>/events.json --timeout 0
 ```
@@ -62,7 +62,7 @@ python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
 終わると知らせが届くので、ポーリングを自分で回さない。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
+python3 <スキルのディレクトリ>/scripts/wait_for_replies.py \
   --repo <owner>/<repo> --number <number> --since <follow.md の since> \
   --head <follow.md の確かめた head> --out <PRDIR>/events.json
 ```
@@ -200,7 +200,7 @@ approve した後も、PR がマージかクローズされるまで待つ。F2 
 `timeout: 7200000`** で起動し、`--head` に approve した commit を渡す — approve の後の push で起きるようにするため。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/wait_for_replies.py \
+python3 <スキルのディレクトリ>/scripts/wait_for_replies.py \
   --repo <owner>/<repo> --number <number> --since <follow.md の since> \
   --head <follow.md の確かめた head> --out <PRDIR>/events.json
 ```

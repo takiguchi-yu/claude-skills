@@ -1,59 +1,51 @@
 #!/usr/bin/env bash
-# 各ディレクトリのスキルとエージェントを ~/.claude にリンクする。何度実行しても同じ状態になる。
+# このリポジトリをローカルのマーケットプレイス claude-skills として登録し、全プラグインを user スコープで入れる。
+# 何度実行しても同じ状態になる。CLAUDE_CONFIG_DIR があれば、そのプロファイルに入れる。
 #
-#   <ディレクトリ>/skills/<名前>/  ->  ~/.claude/skills/<名前>
-#   <ディレクトリ>/agents/*.md     ->  ~/.claude/agents/*.md
+#   .claude-plugin/marketplace.json  ->  マーケットプレイス claude-skills（ディレクトリをそのまま読む）
+#   <ディレクトリ>/                   ->  プラグイン <ディレクトリ>@claude-skills
 #
-# リンク先に実体か別のリンクがあれば ~/.local/state/claude-skills/backup/<日時>/ に退避する。
-# このリポジトリを指すリンクのうち、リンク先が無くなったもの（名前を変えた・消したもの）は外す。
+# ディレクトリのマーケットプレイスはキャッシュにコピーされないので、ここで編集すれば
+# 次のセッション起動か /reload-plugins で反映される。
+# 以前の方式で ~/.claude/{skills,agents} に張ったこのリポジトリへのリンクは外す（二重に読まれないように）。
 # macOS 標準の bash 3.2 で動くように書く。
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
-BACKUP_DIR="$HOME/.local/state/claude-skills/backup/$(date +%Y%m%d-%H%M%S)"
+MARKETPLACE=claude-skills
 
 info() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 
-link() { # <リポジトリ内の実体> <ホームのリンク>
-  local src="$1" dst="$2"
-  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then return; fi
-  if [ -e "$dst" ] || [ -L "$dst" ]; then
-    mkdir -p "$BACKUP_DIR/$(basename "$(dirname "$dst")")"
-    mv "$dst" "$BACKUP_DIR/$(basename "$(dirname "$dst")")/"
-    info "退避しました: $dst -> $BACKUP_DIR/$(basename "$(dirname "$dst")")/"
-  fi
-  mkdir -p "$(dirname "$dst")"
-  ln -s "$src" "$dst"
-  info "リンクしました: $dst"
-}
-
-prune() { # <ディレクトリ>: このリポジトリを指す壊れたリンクを外す
+unlink_legacy() { # <ディレクトリ>: このリポジトリを指すリンクを外す
   local entry
   for entry in "$1"/* "$1"/.[!.]*; do
-    [ -L "$entry" ] && [ ! -e "$entry" ] || continue
+    [ -L "$entry" ] || continue
     case "$(readlink "$entry")" in
       "$REPO"/*)
         rm "$entry"
-        info "外しました（リンク先が無い）: $entry"
+        info "外しました（旧方式のリンク）: $entry"
         ;;
     esac
   done
 }
 
 main() {
-  local dir
-  for dir in "$REPO"/*/skills/*/; do
-    [ -f "$dir/SKILL.md" ] || continue
-    dir="${dir%/}"
-    link "$dir" "$TARGET/skills/$(basename "$dir")"
+  local plugin
+  command -v claude >/dev/null || { echo "claude が見つかりません" >&2; exit 1; }
+  if claude plugin marketplace list --json |
+    python3 -c 'import json,sys; sys.exit(0 if any(m["name"] == sys.argv[1] for m in json.load(sys.stdin)) else 1)' "$MARKETPLACE"; then
+    claude plugin marketplace update "$MARKETPLACE"
+  else
+    claude plugin marketplace add "$REPO" --scope user
+  fi
+  for plugin in $(python3 -c 'import json,sys; print(" ".join(p["name"] for p in json.load(open(sys.argv[1]))["plugins"]))' "$REPO/.claude-plugin/marketplace.json"); do
+    claude plugin install "$plugin@$MARKETPLACE" --scope user
   done
-  for dir in "$REPO"/*/agents/*.md; do
-    [ -f "$dir" ] || continue
-    link "$dir" "$TARGET/agents/$(basename "$dir")"
-  done
-  prune "$TARGET/skills"
-  prune "$TARGET/agents"
+  # 全プラグインが入ってから外す。途中で失敗しても、どちらの方式でも読めない状態にしない
+  unlink_legacy "$TARGET/skills"
+  unlink_legacy "$TARGET/agents"
+  info "入れました。起動中のセッションには /reload-plugins で反映します"
 }
 
 main

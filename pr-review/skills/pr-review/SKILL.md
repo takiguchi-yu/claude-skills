@@ -18,6 +18,8 @@ The Standard of Code Review に沿った基準）を超える指摘だけを出�
 diff 上の正しい位置に結びつけ、下書きとして置き、承認を得て公開すること**。手順 7 で追跡が選ばれたら、
 submit 後に返信を確かめて resolve し、approve し、マージを待って後始末するところまでを持つ（[`references/follow-up.md`](references/follow-up.md)）。
 
+このスキルのディレクトリは `${CLAUDE_SKILL_DIR}`。`references/` のコマンドにある `<スキルのディレクトリ>` は、このパスに置き換えて実行する。
+
 ## 承認を得るまで実行しない操作
 
 - **submit（手順 8）** — 実行した瞬間にレビュイーへ通知が飛ぶ。手順 7 で承認を取る。
@@ -133,11 +135,11 @@ git -C "$WT" log --oneline origin/<baseRefName>..HEAD > "$PRDIR/commits.txt"
 | --- | --- | --- |
 | Spec（1 体） | `/code-review` が立てる。固定点は `origin/<baseRefName>` | 仕様との差分 |
 | Standards（本体） | 下の「Standards 軸を本体で見る」 | 規約違反と smell |
-| 機能面（1 体） | Agent ツールで `subagent_type: pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
+| 機能面（1 体） | Agent ツールで `subagent_type: pr-review:pr-review-functionality` | 正しさ・異常系／複雑さ／変更した挙動のテスト |
 | セキュリティ（1 体） | Agent ツールで `subagent_type: general-purpose`・`model: opus`。中で `/security-review` を起動する | この PR で入った、悪用経路のある脆弱性 |
 
 **機能面のレビュー役の prompt には入力だけを書く** — `$WT`、固定点 `origin/<baseRefName>`、
-`$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`。見方・基準・出力形式はエージェント定義が
+`$PRDIR` の `pr.diff` `files.txt` `commits.txt` `intent.md`、基準 `${CLAUDE_SKILL_DIR}/references/review-standard.md`。見方・出力形式はエージェント定義が
 持っているので、入力だけを渡せば毎回同じレビューになる。
 
 **`/code-review` の SKILL.md は編集しない。** Spec に渡す brief は `/code-review` の
@@ -147,10 +149,10 @@ brief に入れない — 重複の整理は手順 3・4 で台帳がやる。
 ```markdown
 ## 報告のしかた（この節は、上の brief にある語数の上限・省略・引用の指示より優先する）
 
-- 最初に ~/.claude/skills/pr-review/references/review-standard.md を読む。
-- 返すのは ~/.claude/skills/pr-review/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
+- 最初に ${CLAUDE_SKILL_DIR}/references/review-standard.md を読む。
+- 返すのは ${CLAUDE_SKILL_DIR}/references/review-standard.md の「出すもの」A〜C に当たる指摘だけ。
   当たるものは全件返し、語数と件数の上限は無い。「出さないもの」は返さない。
-- 出力形式は ~/.claude/agents/pr-review-functionality.md の「出力形式」節に従う。
+- 出力形式は ${CLAUDE_PLUGIN_ROOT}/agents/pr-review-functionality.md の「出力形式」節に従う。
   ID の接頭辞は spec。コードは貼らずに path:line で指す。
 - git コマンドは `git -C <worktree の絶対パス>` で実行し、ファイルは worktree 配下の絶対パスで読む。
 ```
@@ -293,7 +295,7 @@ GitHub は **diff のハンク内に現れる行**にしかコメントを付け
 GraphQL がエラーを返すが、どの件が悪かったかは返ってこない。投げる前にここで落とす。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/validate_positions.py \
+python3 ${CLAUDE_SKILL_DIR}/scripts/validate_positions.py \
   --diff .scratch/pr-<number>/pr.diff \
   --comments .scratch/pr-<number>/candidates.json \
   --out .scratch/pr-<number>/validated.json
@@ -326,11 +328,11 @@ GitHub がリネーム時に旧パス・新パスのどちらを受け付ける�
 
 ```bash
 # 何を投げるか先に目視する（API は呼ばれない）
-python3 ~/.claude/skills/pr-review/scripts/post_pending_review.py \
+python3 ${CLAUDE_SKILL_DIR}/scripts/post_pending_review.py \
   --pr-id <PR node ID> --comments .scratch/pr-<number>/validated.json --dry-run
 
 # 投稿する
-python3 ~/.claude/skills/pr-review/scripts/post_pending_review.py \
+python3 ${CLAUDE_SKILL_DIR}/scripts/post_pending_review.py \
   --pr-id <PR node ID> --comments .scratch/pr-<number>/validated.json
 ```
 
@@ -398,7 +400,7 @@ submit の `body` がそのままメンション付きコメントになり、**
 （submit の総評、追跡の approve と総評への返信）。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/check_mention.py \
+python3 ${CLAUDE_SKILL_DIR}/scripts/check_mention.py \
   --repo <owner>/<repo> --number <number> --body .scratch/pr-<number>/summary.md
 ```
 

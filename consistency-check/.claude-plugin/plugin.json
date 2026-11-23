@@ -1,0 +1,4 @@
+{
+  "name": "consistency-check",
+  "description": "修正後に参照元を洗い出して修正漏れと矛盾を潰す横断チェックのスキル"
+}

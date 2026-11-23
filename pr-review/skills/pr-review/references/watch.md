@@ -10,7 +10,7 @@
 （個人宛ての依頼を 3 回の監視で取りこぼした。原因は未確認）。
 
 ```bash
-python3 ~/.claude/skills/pr-review/scripts/list_review_targets.py --repo <owner>/<repo> --out <scratchpad>/targets.json
+python3 <スキルのディレクトリ>/scripts/list_review_targets.py --repo <owner>/<repo> --out <scratchpad>/targets.json
 ```
 
 チーム宛てだけの依頼は、ユーザーが対象に含めると言ったときだけ `--include-team` で拾う。
