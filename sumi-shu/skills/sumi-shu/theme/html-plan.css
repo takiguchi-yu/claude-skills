@@ -3,7 +3,7 @@
 :root:root {
   --paper: #ffffff; --card: #ffffff; --sunk: #f3f3f1;
   --ink: #1a1a1a; --ink-2: #47474a; --ink-3: #6b6b67; --line: #d6d6d2; --line-2: #e6e6e2;
-  --accent: #c8321a; --accent-soft: #fbe9e4;
+  --accent: #247c33; --accent-soft: #eaf4eb; /* html-plan は --accent を文字にも使うので main-ink を当てる */
   --sans: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
   --serif: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -13,13 +13,13 @@
   :root:root:not([data-theme="light"]) {
     --paper: #141414; --card: #141414; --sunk: #1f1f1e;
     --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d; --line: #3a3a38; --line-2: #2a2a28;
-    --accent: #ff7759; --accent-soft: #3b1d16;
+    --accent: #30a543; --accent-soft: #17271a;
   }
 }
 :root:root[data-theme="dark"] {
   --paper: #141414; --card: #141414; --sunk: #1f1f1e;
   --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d; --line: #3a3a38; --line-2: #2a2a28;
-  --accent: #ff7759; --accent-soft: #3b1d16;
+  --accent: #30a543; --accent-soft: #17271a;
 }
 
 /* 全幅。--wide は min(var(--wide), 100vw - 40px) の中で使われるので、長さで上書きする */

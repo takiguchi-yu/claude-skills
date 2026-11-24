@@ -10,7 +10,7 @@ archify・html-plan の出力は、`theme/` の CSS で幅・色・書体だけ�
 | `archify` の図のページ | `theme/archify-diagram.css`（色・書体。色で表されていた種類の区別は線で残す: Cloud は太い枠、External は破線、Message Bus は点線。図の幅は、読む幅の下限を 1440px にして、小さくしない） | テンプレートの `<style>` より後ろ。幅は触らない（JS が図を 1 画面に収める幅を計算している） |
 | `html-plan` | `theme/html-plan.css`（幅・色・書体） | pack 前の `plan.html` の `<link rel="stylesheet" href="htmlplan.css">` より後ろ |
 
-- 状態を表す色（archify の `--good` `--caution` `--bad`、html-plan の `--green` `--amber` `--red` など）は、図表の意味を壊さないよう上書きしない
+- 状態を表す色（archify の `--good` `--caution` `--bad`、html-plan の `--green` `--amber` `--red` など）は、図表の意味を壊さないよう上書きしない。`main` の緑は「良い」の緑（archify の `--good`、html-plan の `--green`）と色相が近いので、寄せた出力では色だけで両者を見分けさせず、ラベルの文字で区別する
 - archify の図を SVG・画像で書き出したものは対象外。書き出しの処理が独自の書体を埋め込むため、上書きが届かない
 - CSS を足した explainer は、archify の provenance（成果物の SHA-256 との照合）の検査から外れる。報告には「検査後に幅と配色の CSS を足した」と書く
 - スキルの更新で効かなくなったら、`archify/explainer/reader.css`、`archify/assets/template.html`、`html-plan/runtime/htmlplan.css` の変数名を読み直して `theme/` の CSS を直す

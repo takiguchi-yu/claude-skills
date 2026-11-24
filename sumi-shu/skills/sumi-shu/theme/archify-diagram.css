@@ -4,7 +4,7 @@
   --bg: #ffffff; --grid: transparent; --canvas-dot: #e6e6e2; --mask: #ffffff;
   --panel: #ffffff; --panel-border: #d6d6d2;
   --text: #1a1a1a; --text-muted: #47474a; --text-dim: #6b6b67; --text-faint: #6b6b67;
-  --arrow: #6b6b67; --arrow-emphasis: #c8321a;
+  --arrow: #6b6b67; --arrow-emphasis: #247c33;
   --lane-fill: #f8f8f6; --lane-stroke: #d6d6d2;
   --frontend-fill: #ffffff; --frontend-stroke: #1a1a1a;
   --backend-fill: #ffffff; --backend-stroke: #1a1a1a;
@@ -12,14 +12,15 @@
   --cloud-fill: #ffffff; --cloud-stroke: #6b6b67;
   --external-fill: #ffffff; --external-stroke: #6b6b67;
   --messagebus-fill: #ffffff; --messagebus-stroke: #1a1a1a;
-  --security-fill: #fbe9e4; --security-stroke: #c8321a;
+  --security-fill: #fef2f0; --security-stroke: #ce2f0b;
   --toolbar-bg: #ffffff; --toolbar-border: #d6d6d2; --toolbar-hover: #f3f3f1; --toolbar-menu-bg: #ffffff; --toolbar-text: #1a1a1a;
+  /* template.html は --arrow-emphasis・--security-stroke を文字にも使うので、ライトは main-ink・sub-ink を当てる */
 }
 :root:root[data-theme="dark"] {
   --bg: #141414; --grid: transparent; --canvas-dot: #2a2a28; --mask: #141414;
   --panel: #141414; --panel-border: #3a3a38;
   --text: #ededea; --text-muted: #c2c2bd; --text-dim: #93938d; --text-faint: #93938d;
-  --arrow: #93938d; --arrow-emphasis: #ff7759;
+  --arrow: #93938d; --arrow-emphasis: #30a543;
   --lane-fill: #1a1a19; --lane-stroke: #3a3a38;
   --frontend-fill: #141414; --frontend-stroke: #ededea;
   --backend-fill: #141414; --backend-stroke: #ededea;
@@ -27,7 +28,7 @@
   --cloud-fill: #141414; --cloud-stroke: #93938d;
   --external-fill: #141414; --external-stroke: #93938d;
   --messagebus-fill: #141414; --messagebus-stroke: #ededea;
-  --security-fill: #3b1d16; --security-stroke: #ff7759;
+  --security-fill: #362420; --security-stroke: #f78166;
   --toolbar-bg: #141414; --toolbar-border: #3a3a38; --toolbar-hover: #1f1f1e; --toolbar-menu-bg: #141414; --toolbar-text: #ededea;
 }
 body, svg text,
@@ -35,7 +36,7 @@ html:root[data-preset] h1, html:root[data-preset] .card h3,
 html:root[data-preset] .header-row::after, html:root[data-preset] .diagram-container::after {
   font-family: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
-/* 種類の区別は色でなく線で残す（色は ink と shu だけにするため）: Database は薄い地、Cloud は太い線、External は破線、Message Bus は点線、Region は元の破線 */
+/* 種類の区別は色でなく線で残す（色は ink と main・sub だけにするため。Security は警告として sub で塗る）: Database は薄い地、Cloud は太い線、External は破線、Message Bus は点線、Region は元の破線 */
 .c-cloud { stroke-width: 3px !important; }
 .c-external { stroke-dasharray: 5 3 !important; }
 .c-messagebus { stroke-dasharray: 1 3 !important; stroke-linecap: round; }

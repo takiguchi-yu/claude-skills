@@ -6,8 +6,9 @@
     --paper: #ffffff; --panel: #ffffff; --surface: #ffffff; --sunk: #f3f3f1; --zebra: #f8f8f6; --code: #f3f3f1;
     --ink: #1a1a1a; --secondary: #47474a; --muted: #6b6b67; --faint: #6b6b67;
     --rule: #d6d6d2; --rule-strong: #1a1a1a;
-    --accent: #c8321a; --accent-soft: #fbe9e4; --accent-ink: #a82812; --marker: #fbe9e4;
+    --accent: #247c33; --accent-soft: #eaf4eb; --accent-ink: #247c33; --marker: #eaf4eb;
     --badge: #1a1a1a; --badge-ink: #ffffff; --shadow: none;
+    /* reader.css は --accent を文字にも使うので、ライトは main-ink を当てる（線も同じ色になる） */
     --sans: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
     --serif: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -17,7 +18,7 @@
     --paper: #141414; --panel: #141414; --surface: #141414; --sunk: #1f1f1e; --zebra: #1a1a19; --code: #1f1f1e;
     --ink: #ededea; --secondary: #c2c2bd; --muted: #93938d; --faint: #93938d;
     --rule: #3a3a38; --rule-strong: #ededea;
-    --accent: #ff7759; --accent-soft: #3b1d16; --accent-ink: #ff9a82; --marker: #3b1d16;
+    --accent: #30a543; --accent-soft: #17271a; --accent-ink: #30a543; --marker: #17271a;
     --badge: #ededea; --badge-ink: #141414;
   }
 }
@@ -27,7 +28,7 @@
     --paper: #141414; --panel: #141414; --surface: #141414; --sunk: #1f1f1e; --zebra: #1a1a19; --code: #1f1f1e;
     --ink: #ededea; --secondary: #c2c2bd; --muted: #93938d; --faint: #93938d;
     --rule: #3a3a38; --rule-strong: #ededea;
-    --accent: #ff7759; --accent-soft: #3b1d16; --accent-ink: #ff9a82; --marker: #3b1d16;
+    --accent: #30a543; --accent-soft: #17271a; --accent-ink: #30a543; --marker: #17271a;
     --badge: #ededea; --badge-ink: #141414;
   }
 }

@@ -1,4 +1,4 @@
-/* Sumi Shu の部品の CSS。tokens.css の変数（--paper, --ink, --shu, --space-*, --font-*）を読む。
+/* Sumi Shu の部品の CSS。tokens.css の変数（--paper, --ink, --main, --sub, --space-*, --font-*）を読む。
    ページには tokens.css の後に貼る。先頭の @import の行は貼らず、同じ URL を <link> で <head> に置く */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
 
@@ -31,7 +31,7 @@ body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.
 :is(.row > .v, .a3 .a3-box) :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
 .row > .v > h2 { font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
 .row.conclusion { padding-top: var(--space-5); }
-.row.conclusion > .k { color: var(--shu); }
+.row.conclusion > .k { color: var(--main-ink); }
 .row.conclusion > .v { font-size: 20px; line-height: 1.75; font-weight: 500; }
 
 /* Table: horizontal hairlines only. Header text small and muted over a heavy rule. */
@@ -41,13 +41,15 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.
 th, td { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); border-bottom: 1px solid var(--rule); }
 thead th { font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: 0.04em; border-bottom: 2px solid var(--rule-strong); white-space: nowrap; }
 td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-tr.hl > td { background: var(--shu-soft); }
-.is-shu { color: var(--shu); font-weight: 600; }
+tr.hl > td { background: var(--main-soft); }
+.is-sub { color: var(--sub-ink); font-weight: 600; }
 .is-strong { font-weight: 700; }
 
-/* Note: a recommendation or warning. A short shu rule on top, no box, no fill. */
-.note { border-top: 2px solid var(--shu); padding-top: var(--space-2); max-width: 45em; }
-.note > .tag { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--shu); margin-bottom: var(--space-1); }
+/* Note: a recommendation (main) or a warning (.note.warn, sub). A short rule on top, no box, no fill. */
+.note { border-top: 2px solid var(--main); padding-top: var(--space-2); max-width: 45em; }
+.note > .tag { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--main-ink); margin-bottom: var(--space-1); }
+.note.warn { border-top-color: var(--sub); }
+.note.warn > .tag { color: var(--sub-ink); }
 
 /* Code */
 code, pre, kbd { font-family: var(--font-mono); font-size: 0.875em; }
@@ -62,10 +64,10 @@ pre { background: var(--sunk); padding: var(--space-3); border-radius: var(--rad
 figure { margin: 0; }
 figure svg { display: block; width: 100%; height: auto; }
 figure.scroll > svg { width: auto; max-width: none; margin-inline: auto; } /* 等倍で描き、外枠より狭い図は中央に置く。外枠より広い図は .scroll の中で横に流す */
-a { color: var(--shu); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a { color: var(--main-ink); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 ul, ol { margin: 0; padding-left: 1.4em; }
 li + li { margin-top: var(--space-1); }
-:focus-visible { outline: 2px solid var(--shu); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--main); outline-offset: 2px; }
 .legend { list-style: none; padding-left: 0; }
 
 /* A3: 計画のページの骨組み。左に「なぜ・どこにいるか」、右に「どうするか・何が残るか」を 3 欄ずつ。1100px 未満は 1 列 */
