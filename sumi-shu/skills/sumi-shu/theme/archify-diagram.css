@@ -1,40 +1,43 @@
 /* Sumi Shu: archify の図のページの色と書体だけを寄せる。テンプレートの <style> より後ろに入れる。幅は触らない（図を 1 画面に収めるため、JS が幅を計算している） */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=BIZ+UDPGothic:wght@400;700&family=IBM+Plex+Mono:wght@400&display=swap");
 :root:root[data-theme="light"] {
-  --bg: #ffffff; --grid: transparent; --canvas-dot: #e6e6e2; --mask: #ffffff;
-  --panel: #ffffff; --panel-border: #d6d6d2;
-  --text: #1a1a1a; --text-muted: #47474a; --text-dim: #6b6b67; --text-faint: #6b6b67;
-  --arrow: #6b6b67; --arrow-emphasis: #247c33;
-  --lane-fill: #f8f8f6; --lane-stroke: #d6d6d2;
-  --frontend-fill: #ffffff; --frontend-stroke: #1a1a1a;
-  --backend-fill: #ffffff; --backend-stroke: #1a1a1a;
-  --database-fill: #f3f3f1; --database-stroke: #1a1a1a;
-  --cloud-fill: #ffffff; --cloud-stroke: #6b6b67;
-  --external-fill: #ffffff; --external-stroke: #6b6b67;
-  --messagebus-fill: #ffffff; --messagebus-stroke: #1a1a1a;
-  --security-fill: #fef2f0; --security-stroke: #ce2f0b;
-  --toolbar-bg: #ffffff; --toolbar-border: #d6d6d2; --toolbar-hover: #f3f3f1; --toolbar-menu-bg: #ffffff; --toolbar-text: #1a1a1a;
+  --bg: #ffffff; --grid: transparent; --canvas-dot: #e3e6eb; --mask: #ffffff;
+  --panel: #ffffff; --panel-border: #d5d9df;
+  --text: #222222; --text-muted: #4a4f57; --text-dim: #656b75; --text-faint: #656b75;
+  --arrow: #656b75; --arrow-emphasis: #1f3a5f;
+  --lane-fill: #f7f8fa; --lane-stroke: #d5d9df;
+  --frontend-fill: #ffffff; --frontend-stroke: #222222;
+  --backend-fill: #ffffff; --backend-stroke: #222222;
+  --database-fill: #f1f3f6; --database-stroke: #222222;
+  --cloud-fill: #ffffff; --cloud-stroke: #656b75;
+  --external-fill: #ffffff; --external-stroke: #656b75;
+  --messagebus-fill: #ffffff; --messagebus-stroke: #222222;
+  --security-fill: #fbede8; --security-stroke: #b23510;
+  --toolbar-bg: #ffffff; --toolbar-border: #d5d9df; --toolbar-hover: #f1f3f6; --toolbar-menu-bg: #ffffff; --toolbar-text: #222222;
   /* template.html は --arrow-emphasis・--security-stroke を文字にも使うので、ライトは main-ink・sub-ink を当てる */
 }
 :root:root[data-theme="dark"] {
-  --bg: #141414; --grid: transparent; --canvas-dot: #2a2a28; --mask: #141414;
-  --panel: #141414; --panel-border: #3a3a38;
-  --text: #ededea; --text-muted: #c2c2bd; --text-dim: #93938d; --text-faint: #93938d;
-  --arrow: #93938d; --arrow-emphasis: #30a543;
-  --lane-fill: #1a1a19; --lane-stroke: #3a3a38;
-  --frontend-fill: #141414; --frontend-stroke: #ededea;
-  --backend-fill: #141414; --backend-stroke: #ededea;
-  --database-fill: #1f1f1e; --database-stroke: #ededea;
-  --cloud-fill: #141414; --cloud-stroke: #93938d;
-  --external-fill: #141414; --external-stroke: #93938d;
-  --messagebus-fill: #141414; --messagebus-stroke: #ededea;
-  --security-fill: #362420; --security-stroke: #f78166;
-  --toolbar-bg: #141414; --toolbar-border: #3a3a38; --toolbar-hover: #1f1f1e; --toolbar-menu-bg: #141414; --toolbar-text: #ededea;
+  --bg: #141c28; --grid: transparent; --canvas-dot: #263142; --mask: #141c28;
+  --panel: #141c28; --panel-border: #2f3a4a;
+  --text: #e8e6e1; --text-muted: #c3c6cc; --text-dim: #9aa1ac; --text-faint: #9aa1ac;
+  --arrow: #9aa1ac; --arrow-emphasis: #8fb0dc;
+  --lane-fill: #18212e; --lane-stroke: #2f3a4a;
+  --frontend-fill: #141c28; --frontend-stroke: #e8e6e1;
+  --backend-fill: #141c28; --backend-stroke: #e8e6e1;
+  --database-fill: #1d2635; --database-stroke: #e8e6e1;
+  --cloud-fill: #141c28; --cloud-stroke: #9aa1ac;
+  --external-fill: #141c28; --external-stroke: #9aa1ac;
+  --messagebus-fill: #141c28; --messagebus-stroke: #e8e6e1;
+  --security-fill: #3a2520; --security-stroke: #f0805a;
+  --toolbar-bg: #141c28; --toolbar-border: #2f3a4a; --toolbar-hover: #1d2635; --toolbar-menu-bg: #141c28; --toolbar-text: #e8e6e1;
 }
 body, svg text,
-html:root[data-preset] h1, html:root[data-preset] .card h3,
 html:root[data-preset] .header-row::after, html:root[data-preset] .diagram-container::after {
-  font-family: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-family: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", sans-serif;
+}
+/* 見出しは明朝 */
+html:root[data-preset] h1, html:root[data-preset] .card h3 {
+  font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
 }
 /* 種類の区別は色でなく線で残す（色は ink と main・sub だけにするため。Security は警告として sub で塗る）: Database は薄い地、Cloud は太い線、External は破線、Message Bus は点線、Region は元の破線 */
 .c-cloud { stroke-width: 3px !important; }

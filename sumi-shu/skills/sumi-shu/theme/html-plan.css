@@ -1,25 +1,26 @@
 /* Sumi Shu: html-plan の幅・色・書体を寄せる。pack 前の plan.html の <link rel="stylesheet" href="htmlplan.css"> より後ろに入れる（pack し直しても残る） */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=BIZ+UDPGothic:wght@400;700&family=IBM+Plex+Mono:wght@400&display=swap");
 :root:root {
-  --paper: #ffffff; --card: #ffffff; --sunk: #f3f3f1;
-  --ink: #1a1a1a; --ink-2: #47474a; --ink-3: #6b6b67; --line: #d6d6d2; --line-2: #e6e6e2;
-  --accent: #247c33; --accent-soft: #eaf4eb; /* html-plan は --accent を文字にも使うので main-ink を当てる */
-  --sans: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
-  --serif: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --paper: #ffffff; --card: #ffffff; --sunk: #f1f3f6;
+  --ink: #222222; --ink-2: #4a4f57; --ink-3: #656b75; --line: #d5d9df; --line-2: #e3e6eb;
+  --accent: #1f3a5f; --accent-soft: #e8edf4; /* html-plan は --accent を文字にも使うので main-ink を当てる */
+  --sans: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --shadow: none; --float: none;
+  --r: 0; --r-sm: 0; /* カードと注記の角を落とさない（radius-0） */
 }
 @media (prefers-color-scheme: dark) {
   :root:root:not([data-theme="light"]) {
-    --paper: #141414; --card: #141414; --sunk: #1f1f1e;
-    --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d; --line: #3a3a38; --line-2: #2a2a28;
-    --accent: #30a543; --accent-soft: #17271a;
+    --paper: #141c28; --card: #141c28; --sunk: #1d2635;
+    --ink: #e8e6e1; --ink-2: #c3c6cc; --ink-3: #9aa1ac; --line: #2f3a4a; --line-2: #263142;
+    --accent: #8fb0dc; --accent-soft: #1f2e44;
   }
 }
 :root:root[data-theme="dark"] {
-  --paper: #141414; --card: #141414; --sunk: #1f1f1e;
-  --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d; --line: #3a3a38; --line-2: #2a2a28;
-  --accent: #30a543; --accent-soft: #17271a;
+  --paper: #141c28; --card: #141c28; --sunk: #1d2635;
+  --ink: #e8e6e1; --ink-2: #c3c6cc; --ink-3: #9aa1ac; --line: #2f3a4a; --line-2: #263142;
+  --accent: #8fb0dc; --accent-soft: #1f2e44;
 }
 
 /* 全幅。--wide は min(var(--wide), 100vw - 40px) の中で使われるので、長さで上書きする */

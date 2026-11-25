@@ -1,29 +1,33 @@
 /* Sumi Shu のトークン（色・余白・角丸・書体）。ページの <style> の先頭に貼る。値の正本はこのファイル */
 :root {
   color-scheme: light;
-  --paper: #ffffff; --sunk: #f3f3f1; --ink: #1a1a1a; --ink-2: #47474a; --ink-3: #6b6b67;
-  --rule: #d6d6d2; --rule-strong: #1a1a1a;
-  /* main は強調、sub は問題と警告。素の値（--main・--sub）は線と塗り、*-ink は文字と文字を載せる面、*-soft は薄い面に使う */
-  --main: #2a903b; --main-ink: #247c33; --main-soft: #eaf4eb; --on-main: #ffffff;
-  --sub: #f78166; --sub-ink: #ce2f0b; --sub-soft: #fef2f0; --on-sub: #ffffff;
+  --paper: #ffffff; --sunk: #f1f3f6; --ink: #222222; --ink-2: #4a4f57; --ink-3: #656b75;
+  --rule: #d5d9df; --rule-strong: #222222;
+  /* main は藍で強調、sub は朱で問題と警告。素の値（--main・--sub）は線と塗り、*-ink は文字と文字を載せる面、*-soft は薄い面に使う */
+  --main: #1f3a5f; --main-ink: #1f3a5f; --main-soft: #e8edf4; --on-main: #ffffff;
+  --sub: #c53d13; --sub-ink: #b23510; --sub-soft: #fbede8; --on-sub: #ffffff;
   --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px; --space-5: 40px; --space-6: 64px;
   --radius-0: 0; --radius-1: 2px; --radius-2: 4px;
-  --font-sans: "IBM Plex Sans JP", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-sans: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --motion: 160ms ease-out;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --paper: #141414; --sunk: #1f1f1e; --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d;
-    --rule: #3a3a38; --rule-strong: #ededea;
-    --main: #2a903b; --main-ink: #30a543; --main-soft: #17271a; --on-main: #141414;
-    --sub: #f78166; --sub-ink: #f78166; --sub-soft: #362420; --on-sub: #141414;
+    --paper: #141c28; --sunk: #1d2635; --ink: #e8e6e1; --ink-2: #c3c6cc; --ink-3: #9aa1ac;
+    --rule: #2f3a4a; --rule-strong: #e8e6e1;
+    --main: #8fb0dc; --main-ink: #8fb0dc; --main-soft: #1f2e44; --on-main: #141c28;
+    --sub: #f0805a; --sub-ink: #f0805a; --sub-soft: #3a2520; --on-sub: #141c28;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #141414; --sunk: #1f1f1e; --ink: #ededea; --ink-2: #c2c2bd; --ink-3: #93938d;
-  --rule: #3a3a38; --rule-strong: #ededea;
-  --main: #2a903b; --main-ink: #30a543; --main-soft: #17271a; --on-main: #141414;
-  --sub: #f78166; --sub-ink: #f78166; --sub-soft: #362420; --on-sub: #141414;
+  --paper: #141c28; --sunk: #1d2635; --ink: #e8e6e1; --ink-2: #c3c6cc; --ink-3: #9aa1ac;
+  --rule: #2f3a4a; --rule-strong: #e8e6e1;
+  --main: #8fb0dc; --main-ink: #8fb0dc; --main-soft: #1f2e44; --on-main: #141c28;
+  --sub: #f0805a; --sub-ink: #f0805a; --sub-soft: #3a2520; --on-sub: #141c28;
 }
+/* 動きは操作への反応だけ。動きを減らす設定のときは止める */
+@media (prefers-reduced-motion: reduce) { :root { --motion: 0s; } }

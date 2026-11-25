@@ -1,62 +1,59 @@
-/* Sumi Shu の部品の CSS。tokens.css の変数（--paper, --ink, --main, --sub, --space-*, --font-*）を読む。
+/* Sumi Shu の部品の CSS。tokens.css の変数（--paper, --ink, --main, --sub, --space-*, --font-*, --motion）を読む。
    ページには tokens.css の後に貼る。先頭の @import の行は貼らず、同じ URL を <link> で <head> に置く */
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=BIZ+UDPGothic:wght@400;700&family=IBM+Plex+Mono:wght@400&display=swap");
 
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.85 var(--font-sans); -webkit-font-smoothing: antialiased; }
 
-/* Page: 外枠は 1280px までの広い幅で中央に置く（タイトル・図・表・A3 の 2 列がこの幅）。本文と節の見出しは、中央の 45em の列に入れる */
+/* Page: 外枠は 1280px までの広い幅で中央に置く（図・表・A3 の 2 列がこの幅）。本文と節の見出しは、中央の 45em の列に入れる */
 .page { --col: 720px; /* 文章の列の幅。本文 16px の 45em（全角 45 字前後）。見出し・結論の文字が大きくても同じ幅にそろえる */
   max-width: 1280px; margin-inline: auto;
   padding: var(--space-6) max(var(--space-3), env(safe-area-inset-right, 0px)) var(--space-6) max(var(--space-3), env(safe-area-inset-left, 0px)); }
 @media (min-width: 760px) { .page { padding-left: max(var(--space-5), env(safe-area-inset-left, 0px)); padding-right: max(var(--space-5), env(safe-area-inset-right, 0px)); } }
 .page p { max-width: 45em; margin: 0; }
-/* 文章の列: 本文・節の見出し・箇条書き・説明・注記は 45em の列。広げるもの（図・表・A3・並べて比べるもの）だけが外枠の幅を使う */
-.row > .k, .row > .v > :not(figure, .scroll, .a3, .pair) { width: min(var(--col), 100%); max-width: none; justify-self: center; }
+/* 文章の列: タイトル・本文・節の見出し・箇条書き・説明・注記は 45em の列。広げるもの（図・表・A3・並べて比べるもの）だけが外枠の幅を使う */
+.masthead > *, .row > .k, .row > .v > :not(figure, .scroll, .a3, .pair) { width: min(var(--col), 100%); max-width: none; justify-self: center; }
 .appendix > summary { width: min(var(--col), 100%); margin-inline: auto; }
 .page p + p { margin-top: var(--space-3); }
 
-/* Masthead: caption line, title, heavy rule, conclusion. */
-.masthead { padding-bottom: var(--space-4); border-bottom: 3px solid var(--rule-strong); margin-bottom: 0; }
-.masthead .kicker { font-size: 13px; line-height: 1.7; color: var(--ink-3); letter-spacing: 0.04em; margin: 0 0 var(--space-2); }
-.masthead h1 { font-size: 40px; line-height: 1.3; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+/* Masthead: タイトルと、その下の日付の 1 行。罫線は引かない */
+.masthead { display: grid; gap: var(--space-2); }
+.masthead h1 { font-family: var(--font-serif); font-size: 40px; line-height: 1.3; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: 0.02em; }
+/* 日本語の見出しは文節で折り返す（語の途中で切らない） */
+.masthead h1, .row > .k, .row > .v > h2, .a3 .a3-box > h2, .appendix > summary { word-break: auto-phrase; }
+.masthead .dateline { max-width: none; font-size: 13px; line-height: 1.7; color: var(--ink-3); }
 
-.page { counter-reset: sec; }
-/* Row: 見出し（.k）を本文（.v）の上に置く。見出しの上の余白を下より大きく取り、見出しを下の本文に近づける。節の間は罫線だけで区切る */
-.row { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3);
-  padding-top: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--rule); }
-.row > .k { font-size: 25px; line-height: 1.4; font-weight: 700; letter-spacing: 0.01em; color: var(--ink); text-wrap: balance; overflow-wrap: anywhere; }
-.row:not(.conclusion) > .k::before { counter-increment: sec; content: counter(sec, decimal-leading-zero);
-  display: block; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: var(--space-1); }
+/* Row: 見出し（.k）を本文（.v）の上に置く。節の間は罫線を引かず、上の大きな余白と明朝の見出しで区切る */
+.row { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3); padding-top: var(--space-6); }
+.row > .k { font-family: var(--font-serif); font-size: 25px; line-height: 1.45; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); text-wrap: balance; overflow-wrap: anywhere; }
 .row > .v { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
 :is(.row > .v, .a3 .a3-box) :is(p, li) { overflow-wrap: anywhere; } /* 長いパスや URL で横にあふれさせない */
-.row > .v > h2 { font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
+.row > .v > h2 { font-family: var(--font-serif); font-size: 20px; line-height: 1.5; font-weight: 600; margin: 0; text-wrap: balance; }
+/* 結論: タイトルの直後に見出しなしで置き、20px の本文で読ませる */
 .row.conclusion { padding-top: var(--space-5); }
-.row.conclusion > .k { color: var(--main-ink); }
-.row.conclusion > .v { font-size: 20px; line-height: 1.75; font-weight: 500; }
+.row.conclusion > .v { font-size: 20px; line-height: 1.75; }
 
-/* Table: horizontal hairlines only. Header text small and muted over a heavy rule. */
+/* Table: 罫線は表の中だけ。横の線だけを引き、見出しは小さく ink-3 で、下に rule-strong の 2px */
 .scroll { overflow-x: auto; }
 .scroll > table { min-width: 36em; }
 table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.7; }
 th, td { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); border-bottom: 1px solid var(--rule); }
-thead th { font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: 0.04em; border-bottom: 2px solid var(--rule-strong); white-space: nowrap; }
-td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+thead th { font-size: 13px; font-weight: 700; color: var(--ink-3); border-bottom: 2px solid var(--rule-strong); white-space: nowrap; }
+td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; } /* 本文の書体は字幅が揃わないので、桁を揃える列だけ等幅にする */
 tr.hl > td { background: var(--main-soft); }
-.is-sub { color: var(--sub-ink); font-weight: 600; }
+.is-sub { color: var(--sub-ink); font-weight: 700; }
 .is-strong { font-weight: 700; }
 
-/* Note: a recommendation (main) or a warning (.note.warn, sub). A short rule on top, no box, no fill. */
-.note { border-top: 2px solid var(--main); padding-top: var(--space-2); max-width: 45em; }
-.note > .tag { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--main-ink); margin-bottom: var(--space-1); }
-.note.warn { border-top-color: var(--sub); }
+/* Note: 推奨（main）か警告（.note.warn, sub）を 1 つだけ目立たせる。線・箱・塗りは付けず、色の付いた .tag と前後の余白で示す */
+.note { max-width: 45em; padding-block: var(--space-2); }
+.note > .tag { display: block; font-size: 13px; line-height: 1.7; font-weight: 700; color: var(--main-ink); margin-bottom: var(--space-1); }
 .note.warn > .tag { color: var(--sub-ink); }
 
-/* Code */
+/* Code: 等幅はコード・パス・桁を揃える数値の列だけ */
 code, pre, kbd { font-family: var(--font-mono); font-size: 0.875em; }
 :not(pre) > code { background: var(--sunk); padding: 1px 5px; border-radius: var(--radius-1); }
 pre { background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-2); margin: 0; overflow-x: auto; line-height: 1.6; }
 
-/* Pair: two things compared side by side, each with a caption. */
+/* Pair: 2 つを横に並べて比べる。それぞれに説明を付ける */
 .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: var(--space-4); }
 .pair > div { min-width: 0; display: grid; gap: var(--space-1); align-content: start; }
 .caption, figcaption { font-size: 13px; line-height: 1.7; color: var(--ink-3); }
@@ -70,22 +67,41 @@ li + li { margin-top: var(--space-1); }
 :focus-visible { outline: 2px solid var(--main); outline-offset: 2px; }
 .legend { list-style: none; padding-left: 0; }
 
-/* A3: 計画のページの骨組み。左に「なぜ・どこにいるか」、右に「どうするか・何が残るか」を 3 欄ずつ。1100px 未満は 1 列 */
-.a3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-5);
-  border-bottom: 1px solid var(--rule); }
-.a3 > .a3-col { min-width: 0; display: grid; align-content: start; }
-.a3 > .a3-col + .a3-col { border-left: 1px solid var(--rule); padding-left: var(--space-5); }
-.a3 .a3-box { min-width: 0; display: grid; gap: var(--space-3); align-content: start;
-  padding-block: var(--space-4); border-top: 1px solid var(--rule); }
-.a3 .a3-box:first-child { border-top: 0; }
-.a3 .a3-box > h2:first-child { font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
-.a3 .a3-box > h2 .no { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--ink-3); margin-right: var(--space-2); }
-@media (max-width: 1099px) { .a3 { grid-template-columns: minmax(0, 1fr); } .a3 > .a3-col + .a3-col { border-left: 0; padding-left: 0; } .a3 > .a3-col + .a3-col > .a3-box:first-child { border-top: 1px solid var(--rule); } }
+/* 図と番号の説明を結ぶ: 同じ data-ref を持つ図の <g> と説明の <li> は、どちらかにカーソルかフォーカスが来たら両方を main で示す（操作への反応だけの動き） */
+.legend > li[data-ref] { transition: background-color var(--motion); } /* 面は文章の列からはみ出させない */
+figure [data-ref] :is(rect, ellipse, circle, path, polygon, line) { transition: stroke var(--motion); }
+/* 強調は同じ節（.v・.a3-box）の中だけに届く。番号は 1〜9 まで。10 以上は図を分ける */
+:is(.row > .v, .a3-box):has([data-ref="1"]:is(:hover, :focus-visible)) .legend > li[data-ref="1"],
+:is(.row > .v, .a3-box):has([data-ref="2"]:is(:hover, :focus-visible)) .legend > li[data-ref="2"],
+:is(.row > .v, .a3-box):has([data-ref="3"]:is(:hover, :focus-visible)) .legend > li[data-ref="3"],
+:is(.row > .v, .a3-box):has([data-ref="4"]:is(:hover, :focus-visible)) .legend > li[data-ref="4"],
+:is(.row > .v, .a3-box):has([data-ref="5"]:is(:hover, :focus-visible)) .legend > li[data-ref="5"],
+:is(.row > .v, .a3-box):has([data-ref="6"]:is(:hover, :focus-visible)) .legend > li[data-ref="6"],
+:is(.row > .v, .a3-box):has([data-ref="7"]:is(:hover, :focus-visible)) .legend > li[data-ref="7"],
+:is(.row > .v, .a3-box):has([data-ref="8"]:is(:hover, :focus-visible)) .legend > li[data-ref="8"],
+:is(.row > .v, .a3-box):has([data-ref="9"]:is(:hover, :focus-visible)) .legend > li[data-ref="9"] { background: var(--main-soft); }
+:is(.row > .v, .a3-box):has([data-ref="1"]:is(:hover, :focus-visible)) figure [data-ref="1"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="2"]:is(:hover, :focus-visible)) figure [data-ref="2"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="3"]:is(:hover, :focus-visible)) figure [data-ref="3"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="4"]:is(:hover, :focus-visible)) figure [data-ref="4"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="5"]:is(:hover, :focus-visible)) figure [data-ref="5"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="6"]:is(:hover, :focus-visible)) figure [data-ref="6"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="7"]:is(:hover, :focus-visible)) figure [data-ref="7"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="8"]:is(:hover, :focus-visible)) figure [data-ref="8"] :is(rect, ellipse, circle, path, polygon, line),
+:is(.row > .v, .a3-box):has([data-ref="9"]:is(:hover, :focus-visible)) figure [data-ref="9"] :is(rect, ellipse, circle, path, polygon, line) { stroke: var(--main); }
 
-/* 付録: 本文の後ろに 1 つ。閉じた状態で置き、質疑のときに開く */
-.appendix .row > .k::before { content: none; counter-increment: none; }
-.appendix .row { padding-top: var(--space-5); }
-.appendix { margin-top: var(--space-5); border-top: 3px solid var(--rule-strong); }
-.appendix > summary { cursor: pointer; padding-block: var(--space-4); font-size: 20px; line-height: 1.5; font-weight: 700; color: var(--ink-2); }
+/* A3: 計画のページの骨組み。左に「なぜ・どこにいるか」、右に「どうするか・何が残るか」を 3 欄ずつ。列と欄の間は余白で分け、罫線は引かない。1100px 未満は 1 列 */
+.a3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-6); padding-top: var(--space-5); }
+.a3 > .a3-col { min-width: 0; display: grid; align-content: start; row-gap: var(--space-5); }
+.a3 .a3-box { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
+.a3 .a3-box > h2:first-child { font-family: var(--font-serif); font-size: 20px; line-height: 1.5; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
+.a3 .a3-box > h2 .no { color: var(--ink-3); margin-right: var(--space-2); }
+@media (max-width: 1099px) { .a3 { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-5); } }
+
+/* 付録: 本文の後ろに 1 つ。閉じた状態で置き、質疑のときに開く。開いたときだけ中身を短く現す（操作への反応） */
+.appendix { margin-top: var(--space-6); }
+.appendix > summary { cursor: pointer; padding-block: var(--space-3); font-family: var(--font-serif); font-size: 20px; line-height: 1.5; font-weight: 700; color: var(--ink-2); }
 .appendix > summary::marker { color: var(--ink-3); }
-.appendix[open] > summary { border-bottom: 1px solid var(--rule); }
+.appendix .row { padding-top: var(--space-5); }
+.appendix[open] > .row { animation: sumi-reveal var(--motion) both; }
+@keyframes sumi-reveal { from { opacity: 0; } to { opacity: 1; } }
